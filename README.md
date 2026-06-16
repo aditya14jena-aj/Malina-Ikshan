@@ -1,53 +1,100 @@
-# Malina-Ikshan
+# Malina-Ikshan (मलिन-ईक्षण)
 
-Full-stack application with a React + Vite + Tailwind CSS frontend and a FastAPI + SQLite backend.
+**AI-Powered Carbon Footprint Tracking and Sustainability Insights**
 
-## Structure
-- `/frontend`: React application
-- `/backend`: FastAPI application
-- `/docs`: Documentation
-- `/screenshots`: Project screenshots
+Malina-Ikshan is a full-stack sustainability platform that helps individuals understand, track, and reduce their carbon footprint through activity monitoring, emissions analytics, and AI-powered recommendations.
 
-## Run Instructions
+## Features
+
+* Carbon footprint calculator
+* Daily activity tracking
+* Emissions dashboard
+* Personalized sustainability recommendations
+* AI-powered sustainability coach
+* Responsive modern UI
+* Data visualization and analytics
+
+## Tech Stack
+
+### Frontend
+
+* React
+* Vite
+* Tailwind CSS
+
+### Backend
+
+* FastAPI
+* SQLite
+* SQLAlchemy
+
+### Deployment
+
+* Vercel (Frontend)
+* Render (Backend)
+
+## Project Structure
+
+/frontend – React application
+
+/backend – FastAPI application
+
+/docs – Project documentation
+
+/screenshots – Application screenshots
+
+## Local Development
 
 ### Prerequisites
-- Node.js
-- Python 3.8+
 
-### Running the Backend
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   # On Windows:
-   .\venv\Scripts\activate
-   # On Mac/Linux:
-   source venv/bin/activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the FastAPI development server:
-   ```bash
-   uvicorn app.main:app --reload --port 8000
-   ```
-The API will be available at http://127.0.0.1:8000. Interactive docs are at http://127.0.0.1:8000/docs.
+* Node.js
+* Python 3.8+
 
-### Running the Frontend
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the Vite development server:
-   ```bash
-   npm run dev
-   ```
-The frontend will be available at http://localhost:5173.
+### Backend Setup
+
+```bash
+cd backend
+
+python -m venv venv
+
+# Windows
+.\venv\Scripts\activate
+
+# Linux/Mac
+source venv/bin/activate
+
+pip install -r requirements.txt
+
+uvicorn app.main:app --reload --port 8000
+```
+
+Backend:
+http://127.0.0.1:8000
+
+API Docs:
+http://127.0.0.1:8000/docs
+
+### Frontend Setup
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+Frontend:
+http://localhost:5173
+
+## Future Enhancements
+
+* OCR-based utility bill scanning
+* Carbon reduction goal tracking
+* Gamification and achievement badges
+* Community leaderboard
+* Advanced AI recommendations
+
+## License
+
+MIT License
