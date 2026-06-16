@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 function SustainabilityDashboard() {
   // Inputs
@@ -13,53 +13,131 @@ function SustainabilityDashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Result state (initialized with default calculations based on initial inputs)
+  // Result state
   const [result, setResult] = useState({
     total: 19.46,
-    transport: 3.95, // (15 * 0.21) + (10 * 0.08) = 3.15 + 0.8 = 3.95
-    electricity: 6.56, // 8 * 0.82 = 6.56
-    diet: 5.0, // non-vegetarian = 5.0
+    transport: 3.95, 
+    electricity: 6.56, 
+    diet: 5.0, 
   });
 
-  const handleCalculate = async (e) => {
+  // AI Coach state
+  const [coachData, setCoachData] = useState({
+    score: 32,
+    primary_source: 'Electricity',
+    recommendations: [
+      "Reduce household energy: Switch to LED bulbs, unplug idle devices, and manage heating/cooling.",
+      "Opt for active transportation: Swap solo car rides for public transit, cycling, or walking.",
+      "Integrate plant-based meals: Choose vegetarian or vegan options to reduce high-impact food emissions."
+    ],
+    highlighted_action: "⚡ Critical Action: Conduct a quick home energy check to unplug standby electronics and optimize your thermostat."
+  });
+
+  // Run calculation and fetch coaching advice
+  const updateDashboard = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
     setError(null);
 
+    // 1. Calculate emissions
+    let currentResult = null;
     try {
-      const response = await axios.post('http://127.0.0.1:8000/calculate', {
+      const calcResponse = await axios.post('http://127.0.0.1:8000/calculate', {
         car_km: parseFloat(carKm) || 0,
         bus_km: parseFloat(busKm) || 0,
         electricity_kwh: parseFloat(electricityKwh) || 0,
         diet_type: dietType,
       });
-      setResult(response.data);
+      currentResult = calcResponse.data;
+      setResult(currentResult);
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || 'Failed to calculate emissions. Using local estimation.');
-      // Local fallback calculation if backend is unreachable
+      setError('Failed to reach backend. Running local simulation.');
+      // Local fallback calculation
       const carVal = parseFloat(carKm) || 0;
       const busVal = parseFloat(busKm) || 0;
       const elecVal = parseFloat(electricityKwh) || 0;
       const t = carVal * 0.21 + busVal * 0.08;
       const el = elecVal * 0.82;
       const d = dietType === 'vegetarian' ? 2.0 : 5.0;
-      setResult({
+      currentResult = {
         total: Math.round((t + el + d) * 100) / 100,
         transport: Math.round(t * 100) / 100,
         electricity: Math.round(el * 100) / 100,
         diet: d,
+      };
+      setResult(currentResult);
+    }
+
+    // 2. Fetch AI Coach advice
+    try {
+      const coachResponse = await axios.post('http://127.0.0.1:8000/coach', {
+        transport: currentResult.transport,
+        electricity: currentResult.electricity,
+        diet: currentResult.diet,
+        total: currentResult.total,
+      });
+      setCoachData(coachResponse.data);
+    } catch (err) {
+      console.error(err);
+      // Local fallback coaching advice
+      const total = currentResult.total || 1.0;
+      const t_pct = (currentResult.transport / total) * 100;
+      const e_pct = (currentResult.electricity / total) * 100;
+      const d_pct = (currentResult.diet / total) * 100;
+      const score = maxScore(100 - intScore(currentResult.total * 3.5));
+
+      const pcts = { "Transportation": t_pct, "Electricity": e_pct, "Diet": d_pct };
+      const primary = Object.keys(pcts).reduce((a, b) => pcts[a] > pcts[b] ? a : b);
+
+      const recs = [];
+      if (t_pct > 40) recs.push("Opt for active transportation: Swap solo car rides for public transit, cycling, or walking.");
+      if (e_pct > 40) recs.push("Reduce household energy: Switch to LED bulbs, unplug idle devices, and manage heating/cooling.");
+      if (d_pct > 30) recs.push("Integrate plant-based meals: Choose vegetarian or vegan options to reduce food emissions.");
+      
+      const general = [
+        "Monitor daily habits: Consistency helps you identify and eliminate carbon-heavy routines.",
+        "Conserve water: Shorten showers to save heating energy.",
+        "Compost & recycle: Reducing waste decreases landfill methane emissions."
+      ];
+      while(recs.length < 3) {
+        recs.push(general[recs.length]);
+      }
+
+      let highlight = "";
+      if (primary === "Transportation") {
+        highlight = "🚗 Critical Action: Cut down car trips by 50% this week by combining errands or walking.";
+      } else if (primary === "Electricity") {
+        highlight = "⚡ Critical Action: Conduct a quick home energy check to unplug standby electronics.";
+      } else {
+        highlight = "🍽 Critical Action: Commit to a fully plant-based day tomorrow to drop your diet impact.";
+      }
+
+      setCoachData({
+        score: score,
+        primary_source: primary,
+        recommendations: recs,
+        highlighted_action: highlight
       });
     } finally {
       setLoading(false);
     }
   };
 
+  // Helper local functions
+  const maxScore = (val) => Math.max(0, Math.min(100, val));
+  const intScore = (val) => Math.floor(val);
+
+  // Initial load
+  useEffect(() => {
+    updateDashboard();
+  }, []);
+
   // Recharts Chart Data
   const chartData = [
-    { name: 'Transportation', value: result.transport, color: '#3B82F6' }, // Blue
-    { name: 'Electricity', value: result.electricity, color: '#F59E0B' }, // Amber
-    { name: 'Diet', value: result.diet, color: '#10B981' }, // Emerald
+    { name: 'Transportation', value: result.transport, color: '#3B82F6' },
+    { name: 'Electricity', value: result.electricity, color: '#F59E0B' },
+    { name: 'Diet', value: result.diet, color: '#10B981' },
   ].filter(item => item.value > 0);
 
   // Status Indicator calculations
@@ -71,34 +149,17 @@ function SustainabilityDashboard() {
 
   const status = getStatus(result.total);
 
-  // Calculate percentages
+  // Calculate percentages for UI display
   const totalVal = result.total || 1;
   const transportPct = Math.round((result.transport / totalVal) * 100);
   const electricityPct = Math.round((result.electricity / totalVal) * 100);
   const dietPct = Math.round((result.diet / totalVal) * 100);
 
-  // Generate Insights
-  const getInsights = () => {
-    const insights = [];
-    if (transportPct > 40) {
-      insights.push(`🚗 Transportation contributes a major portion (${transportPct}%) of your daily emissions. Consider carpooling, biking, or public transit to lower this.`);
-    } else {
-      insights.push(`🚗 Your transportation footprint is relatively low, contributing ${transportPct}% of your total daily emissions.`);
-    }
-
-    if (result.electricity > 8) {
-      insights.push(`⚡ Electricity usage is high. Switching to energy-efficient appliances or turning off idle devices could save emissions.`);
-    } else {
-      insights.push(`⚡ Electricity usage is moderate, representing ${electricityPct}% of your carbon output.`);
-    }
-
-    if (dietType === 'non-vegetarian') {
-      insights.push(`🍽 Diet contributes ${dietPct}%. Transitioning to more plant-based meals (vegetarian diet) can reduce your food emissions by up to 60%.`);
-    } else {
-      insights.push(`🌱 Great job! Your vegetarian diet keeps food emissions low at just ${result.diet} kg CO₂.`);
-    }
-
-    return insights;
+  // Score styling color
+  const getScoreColor = (score) => {
+    if (score >= 75) return 'text-emerald-600 ring-emerald-100';
+    if (score >= 45) return 'text-amber-500 ring-amber-100';
+    return 'text-rose-600 ring-rose-100';
   };
 
   return (
@@ -111,7 +172,7 @@ function SustainabilityDashboard() {
         </div>
         <span className="mt-4 md:mt-0 inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium bg-white shadow-sm text-gray-700">
           <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
-          Live Calculator Connected
+          AI Coach Live
         </span>
       </div>
 
@@ -123,11 +184,11 @@ function SustainabilityDashboard() {
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Update Activities</h2>
             {error && (
-              <div className="mb-4 p-3 bg-rose-50 border border-rose-100 rounded-lg text-rose-700 text-xs">
+              <div className="mb-4 p-3 bg-amber-50 border border-amber-100 rounded-lg text-amber-800 text-xs">
                 {error}
               </div>
             )}
-            <form onSubmit={handleCalculate} className="space-y-4">
+            <form onSubmit={updateDashboard} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
                   Car Travel (km)
@@ -178,14 +239,14 @@ function SustainabilityDashboard() {
                   <button
                     type="button"
                     onClick={() => setDietType('vegetarian')}
-                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition ${dietType === 'vegetarian' ? 'bg-emerald-550 border-emerald-600 text-white bg-emerald-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition ${dietType === 'vegetarian' ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                   >
                     Vegetarian
                   </button>
                   <button
                     type="button"
                     onClick={() => setDietType('non-vegetarian')}
-                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition ${dietType === 'non-vegetarian' ? 'bg-emerald-550 border-emerald-600 text-white bg-emerald-600' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition ${dietType === 'non-vegetarian' ? 'bg-emerald-600 border-emerald-600 text-white' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'}`}
                   >
                     Non-Veg
                   </button>
@@ -197,16 +258,16 @@ function SustainabilityDashboard() {
                 disabled={loading}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2 px-4 rounded-lg text-sm shadow-sm transition disabled:bg-slate-500 mt-2"
               >
-                {loading ? 'Updating...' : 'Update Dashboard'}
+                {loading ? 'Optimizing...' : 'Sync Dashboard'}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Right Panel: Dashboard Charts and Stats */}
+        {/* Right Panel: Charts, Stats, and AI Coach */}
         <div className="lg:col-span-8 space-y-6">
           
-          {/* Top row cards */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Total CO2 summary card */}
@@ -216,9 +277,9 @@ function SustainabilityDashboard() {
                 <h3 className="text-4xl font-extrabold text-gray-900 mt-2">{result.total} <span className="text-xl font-normal text-gray-500">kg CO₂</span></h3>
               </div>
               <div className="mt-6 flex items-center justify-between border-t border-gray-100 pt-4">
-                <span className="text-sm text-gray-500">Status Index</span>
+                <span className="text-sm text-gray-500">Impact Assessment</span>
                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${status.color}`}>
-                  <span className={`h-2 w-2 rounded-full ${status.dot}`}></span>
+                  <span className={`h-2.5 w-2.5 rounded-full ${status.dot}`}></span>
                   {status.label}
                 </span>
               </div>
@@ -244,21 +305,23 @@ function SustainabilityDashboard() {
             </div>
           </div>
 
-          {/* Visualization & Insights Section */}
+          {/* Visualization & AI Coach Section */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
             {/* Pie Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 md:col-span-6 flex flex-col items-center">
-              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 self-start">Contribution Share</h3>
-              <div className="w-full h-56">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 md:col-span-5 flex flex-col items-center justify-between">
+              <div className="w-full">
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Contribution Share</h3>
+              </div>
+              <div className="w-full h-48">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={chartData}
                       cx="50%"
                       cy="50%"
-                      innerRadius={60}
-                      outerRadius={80}
+                      innerRadius={50}
+                      outerRadius={70}
                       paddingAngle={4}
                       dataKey="value"
                     >
@@ -273,31 +336,48 @@ function SustainabilityDashboard() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex gap-4 text-xs font-semibold mt-2">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold mt-2 justify-center">
                 {chartData.map((item) => (
-                  <span key={item.name} className="flex items-center gap-1.5">
-                    <span className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                  <span key={item.name} className="flex items-center gap-1">
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
                     {item.name}
                   </span>
                 ))}
               </div>
             </div>
 
-            {/* Insights */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 md:col-span-6 flex flex-col justify-between">
+            {/* AI Coach Card */}
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 md:col-span-7 flex flex-col justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Quick Insights</h3>
-                <div className="space-y-4">
-                  {getInsights().map((insight, idx) => (
-                    <div key={idx} className="flex items-start gap-2 text-sm text-gray-600 leading-relaxed">
-                      <span className="text-green-500 mt-0.5">✦</span>
-                      <span>{insight}</span>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">AI Sustainability Coach</h3>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-medium">Eco Score</span>
+                    <span className={`text-base font-black px-2 py-0.5 rounded-lg bg-gray-50 border border-gray-150 ring-4 ${getScoreColor(coachData.score)}`}>
+                      {coachData.score}/100
+                    </span>
+                  </div>
+                </div>
+
+                {/* Primary Source */}
+                <div className="mb-4 text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded-xl inline-block border border-gray-100">
+                  ⚡ Primary Carbon Source: <strong className="text-gray-800">{coachData.primary_source}</strong>
+                </div>
+
+                {/* Highlighted Action Box */}
+                <div className="mb-4 p-3 bg-amber-50/50 border border-amber-200/60 rounded-xl text-xs text-amber-800 font-medium leading-relaxed">
+                  {coachData.highlighted_action}
+                </div>
+
+                {/* Recommendations */}
+                <div className="space-y-2.5">
+                  {coachData.recommendations.map((rec, idx) => (
+                    <div key={idx} className="flex items-start gap-2 text-xs text-gray-600 leading-normal">
+                      <span className="text-green-500 mt-0.5 font-bold">✓</span>
+                      <span>{rec}</span>
                     </div>
                   ))}
                 </div>
-              </div>
-              <div className="text-xs text-gray-400 border-t border-gray-100 pt-4 mt-6">
-                Daily target is under 5 kg CO₂ per person.
               </div>
             </div>
 
