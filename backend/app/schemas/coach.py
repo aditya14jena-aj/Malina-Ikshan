@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from typing import List
 
 class CoachRequest(BaseModel):
     transport: float
@@ -9,6 +8,10 @@ class CoachRequest(BaseModel):
 
 class CoachResponse(BaseModel):
     score: int
+    score_category: str
+    score_explanation: str
     primary_source: str
-    recommendations: List[str]
+    transport_insight: str
+    electricity_insight: str
+    diet_insight: str
     highlighted_action: str
