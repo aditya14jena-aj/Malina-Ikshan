@@ -23,3 +23,5 @@ class UserResponse(BaseModel):
 class UserInDB(UserResponse):
     """Internal schema that includes the password hash. Not for API responses."""
     password_hash: str
+
+

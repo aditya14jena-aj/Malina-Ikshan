@@ -1,11 +1,11 @@
-import os
 from datetime import datetime, timedelta, timezone
 import bcrypt
 import jwt
+from app.core import config
 
-SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = config.SECRET_KEY
+ALGORITHM = config.JWT_ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = config.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
 def hash_password(plain_password: str) -> str:

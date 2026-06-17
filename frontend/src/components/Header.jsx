@@ -2,19 +2,62 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 import { NavLink } from "react-router-dom";
+
+const API_URL = import.meta.env.VITE_API_URL;
 const Header = () => {
   const { user, logout } = useContext(AuthContext);
   const [streak, setStreak] = useState(0);
   const [ecoScore, setEcoScore] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchNotificationsCount();
+  }, []);
+
+  const fetchNotificationsCount = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get(
+      `${import.meta.env.VITE_API_URL}/notifications/count`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    const fetchNotifications = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(
+          `${API_URL}/notifications`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setNotifications(res.data);
+      } catch (err) {
+        console.error("Failed to fetch notifications", err);
+      }
+    };
+
+    setUnreadCount(res.data.unread_count);
+  };
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
       try {
         const [streakRes, leaderRes] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/logs/streak"),
-          axios.get("http://127.0.0.1:8000/leaderboard"),
+          axios.get(`${API_URL}/logs/streak`),
+          axios.get(`${API_URL}/leaderboard`),
         ]);
         if (streakRes.data) {
           setStreak(streakRes.data.current_streak || 0);
@@ -91,7 +134,7 @@ const Header = () => {
             </div>{" "}
           </div>{" "}
           {/* Icon Buttons */}{" "}
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             {" "}
             <button className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors relative">
               {" "}
@@ -111,7 +154,94 @@ const Header = () => {
                 />{" "}
               </svg>{" "}
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#0a0a0a]"></span>{" "}
-            </button>{" "}
+            </button>{" "} */}
+
+          <div className="relative">
+            <button
+              onClick={() => {
+                setShowNotifications(!showNotifications);
+
+                if (!showNotifications) {
+                  fetchNotifications();
+                }
+              }}
+              className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors relative"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-bold">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {showNotifications && (
+              <div className="absolute right-0 mt-3 w-96 bg-surface dark:bg-[#111] rounded-2xl shadow-xl border border-border dark:border-[#222] overflow-hidden z-50">
+
+                <div className="px-4 py-3 border-b border-border dark:border-[#222]">
+                  <h3 className="font-bold text-text-main">
+                    Notifications
+                  </h3>
+                </div>
+
+                <div className="max-h-[400px] overflow-y-auto">
+
+                  {notifications.length === 0 ? (
+                    <div className="p-6 text-center text-sm text-text-muted">
+                      No notifications yet.
+                    </div>
+                  ) : (
+                    notifications.map((n) => (
+                      <div
+                        key={n.id}
+                        className="p-4 border-b border-border dark:border-[#222] hover:bg-surface2 dark:hover:bg-[#1a1a1a]"
+                      >
+                        <div className="flex gap-3">
+
+                          <div className="text-xl">
+                            {{
+                              achievement: "🏆",
+                              streak: "🔥",
+                              goal: "🎯",
+                              leaderboard: "🥇",
+                              insight: "📈",
+                              system: "🌱",
+                            }[n.type] || "🔔"}
+                          </div>
+
+                          <div>
+                            <p className="font-semibold text-text-main">
+                              {n.title}
+                            </p>
+
+                            <p className="text-sm text-text-muted">
+                              {n.message}
+                            </p>
+                          </div>
+
+                        </div>
+                      </div>
+                    ))
+                  )}
+
+                </div>
+
+              </div>
+            )}
             {/* <button className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors hidden sm:block">
               {" "}
               <svg

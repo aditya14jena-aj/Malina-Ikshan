@@ -7,12 +7,14 @@ from app.api.emission import router as emission_router
 from app.api.achievement import router as achievement_router
 from app.api.leaderboard import router as leaderboard_router
 
+from app.core import config
+
 app = FastAPI(title="Malina-Ikshan API", version="1.0.0")
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Modify in production
+    allow_origins=config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

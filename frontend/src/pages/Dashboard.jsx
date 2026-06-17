@@ -1074,7 +1074,7 @@ function Dashboard() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-100 dark:border-gray-800/60 pb-6 mb-10">
         <div>
           <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
-            Dashboard
+            Malina-Ikshan Dashboard
           </h1>
           <p className="text-gray-500 dark:text-gray-400 font-medium mt-1.5 text-sm">
             Monitor, calculate, and neutralize your active footprint footprint metrics.
