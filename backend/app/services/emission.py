@@ -67,3 +67,53 @@ def get_streaks(db: Session, user_id: int):
             
     return {"current_streak": current_streak, "longest_streak": longest_streak}
 
+def save_or_update_daily_log(db: Session, user_id: int, car_km: float, bus_km: float, electricity_kwh: float, diet_type: str):
+    from datetime import date
+    from sqlalchemy import func
+    from app.models.emission import EmissionLog
+    from app.services.coach import CoachService
+    from app.schemas.coach import CoachRequest
+    
+    # Calculate emissions
+    transport = (car_km * 0.2) + (bus_km * 0.05)
+    electricity = electricity_kwh * 0.4
+    diet = 1.5 if diet_type == "vegetarian" else 3.0
+    total = transport + electricity + diet
+    
+    # Get coach score
+    coach_req = CoachRequest(transport=transport, electricity=electricity, diet=diet, total=total)
+    coach_advice = CoachService.get_coach_advice(coach_req)
+    eco_score = coach_advice.score
+    
+    # Check if a log exists for today
+    today = date.today()
+    today_log = db.query(EmissionLog).filter(
+        EmissionLog.user_id == user_id,
+        func.date(EmissionLog.date) == today
+    ).first()
+    
+    if today_log:
+        today_log.transport = round(transport, 2)
+        today_log.electricity = round(electricity, 2)
+        today_log.diet = round(diet, 2)
+        today_log.total = round(total, 2)
+        today_log.eco_score = eco_score
+        db.commit()
+        db.refresh(today_log)
+        db_log = today_log
+    else:
+        db_log = EmissionLog(
+            user_id=user_id,
+            transport=round(transport, 2),
+            electricity=round(electricity, 2),
+            diet=round(diet, 2),
+            total=round(total, 2),
+            eco_score=eco_score
+        )
+        db.add(db_log)
+        db.commit()
+        db.refresh(db_log)
+        
+    return db_log
+
+

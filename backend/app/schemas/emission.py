@@ -21,3 +21,10 @@ class EmissionLogWithBadgesResponse(BaseModel):
     log: EmissionLogResponse
     new_badges: List[Any] = []
 
+class DailyEmissionRequest(BaseModel):
+    car_km: float
+    bus_km: float
+    electricity_kwh: float
+    diet_type: str
+
+

@@ -5,8 +5,8 @@ from typing import List
 from app.database.session import get_db
 from app.api.deps import get_current_user
 from app.models.user import User
-from app.schemas.emission import EmissionLogCreate, EmissionLogResponse, EmissionLogWithBadgesResponse
-from app.services.emission import create_emission_log, get_user_logs, get_weekly_logs, get_streaks
+from app.schemas.emission import EmissionLogCreate, EmissionLogResponse, EmissionLogWithBadgesResponse, DailyEmissionRequest
+from app.services.emission import create_emission_log, get_user_logs, get_weekly_logs, get_streaks, save_or_update_daily_log
 from app.services.achievement import evaluate_badges
 
 router = APIRouter()
@@ -45,3 +45,30 @@ def read_weekly_logs(db: Session = Depends(get_db), current_user: User = Depends
             "eco_score": round(log.eco_score, 1)
         })
     return formatted_logs
+
+@router.post("/daily", response_model=EmissionLogWithBadgesResponse, status_code=status.HTTP_201_CREATED)
+def add_or_update_daily_log(
+    data: DailyEmissionRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    db_log = save_or_update_daily_log(
+        db=db,
+        user_id=current_user.id,
+        car_km=data.car_km,
+        bus_km=data.bus_km,
+        electricity_kwh=data.electricity_kwh,
+        diet_type=data.diet_type
+    )
+    new_badges = evaluate_badges(db=db, user_id=current_user.id, current_log=db_log)
+    return {"log": db_log, "new_badges": new_badges}
+
+@router.get("/progress")
+def read_progress(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    history = read_weekly_logs(db=db, current_user=current_user)
+    streaks = read_streak(db=db, current_user=current_user)
+    return {"history": history, "streaks": streaks}
+

@@ -112,7 +112,7 @@ const Header = () => {
               </svg>{" "}
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white dark:border-[#0a0a0a]"></span>{" "}
             </button>{" "}
-            <button className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors hidden sm:block">
+            {/* <button className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors hidden sm:block">
               {" "}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +135,7 @@ const Header = () => {
                   d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                 />{" "}
               </svg>{" "}
-            </button>{" "}
+            </button>{" "} */}
           </div>{" "}
           {/* Profile Dropdown */}{" "}
           <div className="relative" ref={dropdownRef}>
@@ -199,7 +199,11 @@ const Header = () => {
                   </svg>{" "}
                   My Profile{" "}
                 </NavLink>{" "}
-                <button className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-text-muted dark:text-text-muted hover:bg-surface2 dark:hover:bg-[#1a1a1a] transition-colors sm:hidden">
+                <NavLink
+                  to="/settings"
+                  onClick={() => setShowDropdown(false)}
+                  className="w-full flex items-center px-4 py-2.5 text-sm font-medium text-text-muted dark:text-text-muted hover:bg-surface2 dark:hover:bg-[#1a1a1a] transition-colors"
+                >
                   {" "}
                   <svg
                     className="w-4 h-4 mr-3 text-text-muted"
@@ -221,7 +225,7 @@ const Header = () => {
                     ></path>
                   </svg>{" "}
                   Settings{" "}
-                </button>{" "}
+                </NavLink>{" "}
                 <div className="border-t border-border dark:border-[#222] mt-1 pt-1">
                   {" "}
                   <button

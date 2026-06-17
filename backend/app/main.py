@@ -20,6 +20,7 @@ app.add_middleware(
 
 app.include_router(auth_router, tags=["Auth"])
 app.include_router(emission_router, prefix="/logs", tags=["Logs"])
+app.include_router(emission_router, prefix="/api/emissions", tags=["Emissions"])
 app.include_router(achievement_router, prefix="/achievements", tags=["Achievements"])
 app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(calculator_router, tags=["Calculator"])

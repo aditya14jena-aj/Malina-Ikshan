@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Progress from './pages/Progress';
 import Community from './pages/Community';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
               <Route path="progress" element={<Progress />} />
               <Route path="community" element={<Community />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
               <Route index element={<Navigate to="/dashboard" replace />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
