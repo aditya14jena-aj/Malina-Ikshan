@@ -3,7 +3,7 @@ import SustainabilityDashboard from './pages/SustainabilityDashboard'
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       <SustainabilityDashboard />
     </div>
   )

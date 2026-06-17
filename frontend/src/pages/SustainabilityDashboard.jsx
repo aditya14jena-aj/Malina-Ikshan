@@ -17,9 +17,9 @@ function SustainabilityDashboard() {
   // Result state
   const [result, setResult] = useState({
     total: 19.46,
-    transport: 3.95, 
-    electricity: 6.56, 
-    diet: 5.0, 
+    transport: 3.95,
+    electricity: 6.56,
+    diet: 5.0,
   });
 
   // History State for Analytics
@@ -122,7 +122,7 @@ function SustainabilityDashboard() {
       const t_pct = Math.round((currentResult.transport / total) * 100);
       const e_pct = Math.round((currentResult.electricity / total) * 100);
       const d_pct = Math.round((currentResult.diet / total) * 100);
-      
+
       let base_score = 100;
       if (total <= 5) base_score = 100 - (total * 2);
       else if (total <= 10) base_score = 90 - ((total - 5) * 3);
@@ -134,7 +134,7 @@ function SustainabilityDashboard() {
       const max_pct = Math.max(t_pct, e_pct, d_pct);
       if (max_pct > 80) distribution_penalty = 10;
       else if (max_pct > 60) distribution_penalty = 5;
-          
+
       const score = Math.floor(Math.max(0, Math.min(100, base_score - distribution_penalty)));
 
       let score_category = "";
@@ -219,18 +219,18 @@ function SustainabilityDashboard() {
   };
 
   // --- Analytics Calculations ---
-  const bestDay = history.length > 0 ? history.reduce((min, p) => p.total < min.total ? p : min, history[0]) : {day: '-', total: 0};
-  const worstDay = history.length > 0 ? history.reduce((max, p) => p.total > max.total ? p : max, history[0]) : {day: '-', total: 0};
+  const bestDay = history.length > 0 ? history.reduce((min, p) => p.total < min.total ? p : min, history[0]) : { day: '-', total: 0 };
+  const worstDay = history.length > 0 ? history.reduce((max, p) => p.total > max.total ? p : max, history[0]) : { day: '-', total: 0 };
   const avgWeekly = history.length > 0 ? (history.reduce((acc, p) => acc + p.total, 0) / history.length).toFixed(2) : 0;
-  
+
   let pctChange = 0;
   let insightText = "Not enough data to calculate trends.";
   if (history.length > 1) {
-    const firstHalfAvg = history.slice(0, Math.ceil(history.length/2)).reduce((a,b)=>a+b.total,0) / Math.ceil(history.length/2);
-    const lastHalfAvg = history.slice(Math.ceil(history.length/2)).reduce((a,b)=>a+b.total,0) / Math.floor(history.length/2);
-    
+    const firstHalfAvg = history.slice(0, Math.ceil(history.length / 2)).reduce((a, b) => a + b.total, 0) / Math.ceil(history.length / 2);
+    const lastHalfAvg = history.slice(Math.ceil(history.length / 2)).reduce((a, b) => a + b.total, 0) / Math.floor(history.length / 2);
+
     pctChange = (((lastHalfAvg - firstHalfAvg) / firstHalfAvg) * 100).toFixed(1);
-    
+
     if (pctChange < 0) {
       insightText = `Awesome! Your footprint decreased by ${Math.abs(pctChange)}% compared to earlier this week.`;
     } else if (pctChange > 0) {
@@ -277,10 +277,10 @@ function SustainabilityDashboard() {
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
-        
+
         {/* Left Panel: Inputs & Summary */}
         <div className="lg:col-span-4 space-y-6">
-          
+
           {/* Total CO2 summary card */}
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200 flex flex-col justify-between">
             <div>
@@ -381,9 +381,9 @@ function SustainabilityDashboard() {
 
         {/* Right Panel: Charts and AI Coach */}
         <div className="lg:col-span-8 space-y-6">
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Breakdown Card */}
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200">
               <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-5">Emissions Breakdown</h3>
@@ -433,7 +433,7 @@ function SustainabilityDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <RechartsTooltip 
+                    <RechartsTooltip
                       formatter={(value) => [`${value} kg CO₂`, 'Emissions']}
                       contentStyle={{ borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
                     />
@@ -447,7 +447,7 @@ function SustainabilityDashboard() {
           {/* AI Sustainability Coach Card */}
           <div className="bg-white/80 backdrop-blur-xl p-8 rounded-[2rem] shadow-xl border border-gray-100 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 via-blue-500 to-indigo-500"></div>
-            
+
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -458,19 +458,19 @@ function SustainabilityDashboard() {
                 </div>
                 <p className="text-gray-500 text-sm">Personalized, data-driven strategies to lower your ecological footprint.</p>
               </div>
-              
+
               {/* Eco Score Engine Display */}
               <div className="flex flex-row items-center gap-5 bg-white/60 p-4 rounded-3xl border border-gray-100 shadow-sm backdrop-blur-md">
                 {/* SVG Progress Ring */}
                 <div className="relative flex items-center justify-center w-20 h-20 shrink-0">
                   <svg className="transform -rotate-90 w-20 h-20">
                     <circle cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-gray-100" />
-                    <circle 
-                      cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="6" fill="transparent" 
-                      strokeDasharray={circumference} 
-                      strokeDashoffset={strokeDashoffset} 
-                      className={`transition-all duration-1000 ease-in-out ${getScoreStrokeColor(coachData.score)}`} 
-                      strokeLinecap="round" 
+                    <circle
+                      cx="40" cy="40" r="34" stroke="currentColor" strokeWidth="6" fill="transparent"
+                      strokeDasharray={circumference}
+                      strokeDashoffset={strokeDashoffset}
+                      className={`transition-all duration-1000 ease-in-out ${getScoreStrokeColor(coachData.score)}`}
+                      strokeLinecap="round"
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center">
@@ -512,7 +512,7 @@ function SustainabilityDashboard() {
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed">{coachData.transport_insight}</p>
               </div>
-              
+
               <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition duration-300">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="flex items-center justify-center bg-amber-50 text-amber-500 h-10 w-10 rounded-xl text-lg">⚡</span>
@@ -577,12 +577,12 @@ function SustainabilityDashboard() {
               {/* Milestones */}
               <div className="flex justify-between items-center relative mb-6">
                 <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -z-10 -translate-y-1/2"></div>
-                
+
                 <div className="flex flex-col items-center bg-white px-3 relative">
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-black mb-2 border-4 transition-all duration-500 ${progressPct >= 0 ? 'bg-emerald-500 text-white border-emerald-100' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>1</div>
                   <span className="text-[10px] font-bold text-gray-500 uppercase absolute -bottom-4 whitespace-nowrap">Started</span>
                 </div>
-                
+
                 <div className="flex flex-col items-center bg-white px-3 relative">
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center text-sm font-black mb-2 border-4 transition-all duration-500 ${progressPct >= 50 ? 'bg-emerald-500 text-white border-emerald-100' : 'bg-gray-100 text-gray-400 border-gray-200'}`}>2</div>
                   <span className="text-[10px] font-bold text-gray-500 uppercase absolute -bottom-4 whitespace-nowrap">Halfway</span>
@@ -593,7 +593,7 @@ function SustainabilityDashboard() {
                   <span className="text-[10px] font-bold text-gray-500 uppercase absolute -bottom-4 whitespace-nowrap">Goal Met</span>
                 </div>
               </div>
-              
+
               <div className="mt-8 p-4 bg-teal-50/50 rounded-xl border border-teal-100 text-teal-900 text-sm flex gap-4 items-start">
                 <span className="text-2xl mt-0.5">🚀</span>
                 <div>
@@ -613,9 +613,9 @@ function SustainabilityDashboard() {
           <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight">Weekly Analytics</h2>
           <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-bold uppercase tracking-wider rounded-full">Past 7 Calculations</span>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* Main Chart */}
           <div className="lg:col-span-8 bg-white p-8 rounded-3xl shadow-sm border border-gray-200">
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-6">Emissions Trend (kg CO₂)</h3>
@@ -623,27 +623,27 @@ function SustainabilityDashboard() {
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={history} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                  <XAxis 
-                    dataKey="day" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#6B7280', fontSize: 12 }} 
+                  <XAxis
+                    dataKey="day"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
                     dy={10}
                   />
-                  <YAxis 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{ fill: '#6B7280', fontSize: 12 }} 
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#6B7280', fontSize: 12 }}
                     dx={-10}
                   />
-                  <RechartsTooltip 
+                  <RechartsTooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
                     cursor={{ stroke: '#9CA3AF', strokeWidth: 1, strokeDasharray: '4 4' }}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="total" 
-                    stroke="#4F46E5" 
+                  <Line
+                    type="monotone"
+                    dataKey="total"
+                    stroke="#4F46E5"
                     strokeWidth={4}
                     dot={{ fill: '#4F46E5', strokeWidth: 2, r: 4, stroke: '#FFFFFF' }}
                     activeDot={{ r: 6, fill: '#4F46E5', stroke: '#FFFFFF', strokeWidth: 2 }}
@@ -652,7 +652,7 @@ function SustainabilityDashboard() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            
+
             {/* Quick Insight Text below chart */}
             <div className="mt-6 flex items-center gap-3 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 text-indigo-900">
               <span className="text-xl">📈</span>
@@ -662,7 +662,7 @@ function SustainabilityDashboard() {
 
           {/* Stats Column */}
           <div className="lg:col-span-4 space-y-6">
-            
+
             {/* Average */}
             <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-200 flex items-center">
               <div className="h-14 w-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mr-4 shrink-0">
