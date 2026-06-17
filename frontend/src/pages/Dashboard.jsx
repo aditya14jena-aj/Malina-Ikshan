@@ -77,7 +77,7 @@
 //   };
 //   const fetchDashboardData = async () => {
 //     try {
-//       const historyRes = await axios.get("http://127.0.0.1:8000/logs/weekly");
+//       const historyRes = await axios.get("http://https://malina-ikshan.onrender.com:8000/logs/weekly");
 //       if (historyRes.data && historyRes.data.length > 0) {
 //         const latest = historyRes.data[historyRes.data.length - 1];
 //         if (!result) {
@@ -94,7 +94,7 @@
 //     setLoading(true);
 //     setError(null);
 //     try {
-//       const logRes = await axios.post("http://127.0.0.1:8000/api/emissions/daily", {
+//       const logRes = await axios.post("http://https://malina-ikshan.onrender.com:8000/api/emissions/daily", {
 //         car_km: parseFloat(carKm) || 0,
 //         bus_km: parseFloat(busKm) || 0,
 //         electricity_kwh: parseFloat(electricityKwh) || 0,
@@ -708,7 +708,7 @@
 
 //   const fetchDashboardData = async () => {
 //     try {
-//       const historyRes = await axios.get("http://127.0.0.1:8000/api/emissions/progress");
+//       const historyRes = await axios.get("http://https://malina-ikshan.onrender.com:8000/api/emissions/progress");
 //       if (historyRes.data && historyRes.data.history && historyRes.data.history.length > 0) {
 //         const latest = historyRes.data.history[historyRes.data.history.length - 1];
 //         setResult(latest);
@@ -724,7 +724,7 @@
 //     setLoading(true);
 //     setError(null);
 //     try {
-//       const logRes = await axios.post("http://127.0.0.1:8000/api/emissions/daily", {
+//       const logRes = await axios.post("http://https://malina-ikshan.onrender.com:8000/api/emissions/daily", {
 //         car_km: parseFloat(carKm) || 0,
 //         bus_km: parseFloat(busKm) || 0,
 //         electricity_kwh: parseFloat(electricityKwh) || 0,
@@ -999,7 +999,7 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const historyRes = await axios.get("http://127.0.0.1:8000/api/emissions/progress");
+      const historyRes = await axios.get("http://https://malina-ikshan.onrender.com/api/emissions/progress");
       if (historyRes.data && historyRes.data.history && historyRes.data.history.length > 0) {
         const latest = historyRes.data.history[historyRes.data.history.length - 1];
         setResult(latest);
@@ -1015,7 +1015,7 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const logRes = await axios.post("http://127.0.0.1:8000/api/emissions/daily", {
+      const logRes = await axios.post("http://https://malina-ikshan.onrender.com/api/emissions/daily", {
         car_km: parseFloat(carKm) || 0,
         bus_km: parseFloat(busKm) || 0,
         electricity_kwh: parseFloat(electricityKwh) || 0,

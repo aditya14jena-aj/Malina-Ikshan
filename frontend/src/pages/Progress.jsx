@@ -20,7 +20,7 @@
 
 //   const fetchProgressData = async () => {
 //     try {
-//       const response = await axios.get("http://127.0.0.1:8000/api/emissions/progress");
+//       const response = await axios.get("http://https://malina-ikshan.onrender.com:8000/api/emissions/progress");
 //       if (response.data) {
 //         const historyData = response.data.history || [];
 //         setHistory(historyData);
@@ -420,7 +420,7 @@ function Progress() {
 
   const fetchProgressData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/emissions/progress");
+      const response = await axios.get("http://https://malina-ikshan.onrender.com/api/emissions/progress");
       if (response.data && response.data.history) {
         const list = response.data.history.map(item => ({
           ...item,

@@ -1,11 +1,11 @@
+# app/schemas/notification.py
+
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
 
 
 class NotificationResponse(BaseModel):
     id: int
-    user_id: int
     title: str
     message: str
     type: str

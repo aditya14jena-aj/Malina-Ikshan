@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-ENV = os.getenv("ENV", "development").lower()
+ENV = os.getenv("ENV", "production").lower()
 
 # JWT Settings
 SECRET_KEY = os.getenv("SECRET_KEY", "supersecretkey")

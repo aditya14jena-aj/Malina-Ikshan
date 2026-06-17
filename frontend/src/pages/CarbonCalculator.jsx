@@ -15,7 +15,7 @@ function CarbonCalculator() {
     setResult(null);
     try {
       /* Pointing to FastAPI default host. Adjust port if needed. */ const response =
-        await axios.post("http://127.0.0.1:8000/calculate", {
+        await axios.post("http://https://malina-ikshan.onrender.com/calculate", {
           car_km: parseFloat(carKm) || 0,
           bus_km: parseFloat(busKm) || 0,
           electricity_kwh: parseFloat(electricityKwh) || 0,
@@ -26,7 +26,7 @@ function CarbonCalculator() {
       console.error(err);
       setError(
         err.response?.data?.detail ||
-          "Failed to calculate emissions. Make sure the backend server is running.",
+        "Failed to calculate emissions. Make sure the backend server is running.",
       );
     } finally {
       setLoading(false);

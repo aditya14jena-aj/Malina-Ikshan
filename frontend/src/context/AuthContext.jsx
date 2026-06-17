@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const API_URL = "http://localhost:8000";
+  const API_URL = "https://malina-ikshan.onrender.com";
   /* Adjust as needed */ useEffect(() => {
     const initAuth = () => {
       const storedToken = localStorage.getItem("access_token");

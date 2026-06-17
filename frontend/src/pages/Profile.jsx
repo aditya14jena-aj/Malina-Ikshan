@@ -9,7 +9,7 @@ function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const badgeRes = await axios.get("http://127.0.0.1:8000/achievements");
+        const badgeRes = await axios.get("http://https://malina-ikshan.onrender.com/achievements");
         if (badgeRes.data) {
           setBadges(badgeRes.data);
         }

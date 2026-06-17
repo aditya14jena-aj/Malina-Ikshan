@@ -8,7 +8,7 @@ function Community() {
     const fetchCommunityData = async () => {
       try {
         const leaderboardRes = await axios.get(
-          "http://127.0.0.1:8000/leaderboard"
+          "http://https://malina-ikshan.onrender.com/leaderboard"
         );
         if (leaderboardRes.data) {
           setLeaderboard(leaderboardRes.data);
@@ -78,24 +78,24 @@ function Community() {
                 <div
                   key={idx}
                   className={`flex items-center justify-between p-5 rounded-2xl border transition-all duration-300 ${isCurrentUser
-                      ? "bg-gradient-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-950/40 dark:to-teal-950/20 border-emerald-500/30 dark:border-emerald-500/20 shadow-md shadow-emerald-500/5"
-                      : "bg-gray-50/50 dark:bg-gray-950/40 border-gray-100 dark:border-gray-800/40 hover:border-gray-200 dark:hover:border-gray-800/80"
+                    ? "bg-gradient-to-r from-emerald-500/10 to-teal-500/5 dark:from-emerald-950/40 dark:to-teal-950/20 border-emerald-500/30 dark:border-emerald-500/20 shadow-md shadow-emerald-500/5"
+                    : "bg-gray-50/50 dark:bg-gray-950/40 border-gray-100 dark:border-gray-800/40 hover:border-gray-200 dark:hover:border-gray-800/80"
                     }`}
                 >
                   {/* Profile Details & Rank Block */}
                   <div className="flex items-center gap-4 min-w-0">
                     <div className={`h-10 w-10 shrink-0 font-black text-sm rounded-xl flex items-center justify-center ${idx === 0 ? "bg-amber-500/10 text-amber-500 text-lg" :
-                        idx === 1 ? "bg-slate-400/10 text-slate-400 text-lg" :
-                          idx === 2 ? "bg-amber-700/10 text-amber-700 text-lg" :
-                            "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500"
+                      idx === 1 ? "bg-slate-400/10 text-slate-400 text-lg" :
+                        idx === 2 ? "bg-amber-700/10 text-amber-700 text-lg" :
+                          "bg-gray-100 dark:bg-gray-900 text-gray-400 dark:text-gray-500"
                       }`}>
                       {getRankBadge(idx)}
                     </div>
 
                     {/* Generated Initials Avatar Icon */}
                     <div className={`h-10 w-10 shrink-0 rounded-full font-black text-xs uppercase flex items-center justify-center tracking-wider ${isCurrentUser
-                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/10"
-                        : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-500/10"
+                      : "bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
                       }`}>
                       {entry.username ? entry.username.substring(0, 2) : "EC"}
                     </div>

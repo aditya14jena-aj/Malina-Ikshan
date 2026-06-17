@@ -69,10 +69,10 @@ uvicorn app.main:app --reload --port 8000
 ```
 
 Backend:
-http://127.0.0.1:8000
+http://https://malina-ikshan.onrender.com
 
 API Docs:
-http://127.0.0.1:8000/docs
+http://https://malina-ikshan.onrender.com:8000/docs
 
 ### Frontend Setup
 
