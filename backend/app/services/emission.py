@@ -1,0 +1,69 @@
+from sqlalchemy.orm import Session
+from sqlalchemy import desc
+from app.models.emission import EmissionLog
+from app.schemas.emission import EmissionLogCreate
+
+def create_emission_log(db: Session, user_id: int, log: EmissionLogCreate):
+    db_log = EmissionLog(
+        user_id=user_id,
+        transport=log.transport,
+        electricity=log.electricity,
+        diet=log.diet,
+        total=log.total,
+        eco_score=log.eco_score
+    )
+    db.add(db_log)
+    db.commit()
+    db.refresh(db_log)
+    return db_log
+
+def get_user_logs(db: Session, user_id: int, limit: int = 100):
+    return db.query(EmissionLog).filter(EmissionLog.user_id == user_id).order_by(desc(EmissionLog.date)).limit(limit).all()
+
+def get_weekly_logs(db: Session, user_id: int):
+    from sqlalchemy import func
+    # Group by date, sum the totals, return last 7 unique days
+    results = db.query(
+        func.date(EmissionLog.date).label('day'),
+        func.sum(EmissionLog.total).label('total'),
+        func.sum(EmissionLog.transport).label('transport'),
+        func.sum(EmissionLog.electricity).label('electricity'),
+        func.sum(EmissionLog.diet).label('diet'),
+        func.avg(EmissionLog.eco_score).label('eco_score')
+    ).filter(EmissionLog.user_id == user_id).group_by(func.date(EmissionLog.date)).order_by(desc('day')).limit(7).all()
+    return list(reversed(results))
+
+def get_streaks(db: Session, user_id: int):
+    logs = db.query(EmissionLog.date).filter(EmissionLog.user_id == user_id).order_by(desc(EmissionLog.date)).all()
+    if not logs:
+        return {"current_streak": 0, "longest_streak": 0}
+        
+    unique_dates = sorted(list(set([log.date.date() for log in logs])), reverse=True)
+    
+    from datetime import date, timedelta
+    today = date.today()
+    
+    current_streak = 0
+    longest_streak = 0
+    
+    # Calculate current streak
+    if unique_dates and (unique_dates[0] == today or unique_dates[0] == today - timedelta(days=1)):
+        current_streak = 1
+        for i in range(1, len(unique_dates)):
+            if unique_dates[i-1] - unique_dates[i] == timedelta(days=1):
+                current_streak += 1
+            else:
+                break
+                
+    # Calculate longest streak
+    temp_streak = 1
+    longest_streak = 1 if unique_dates else 0
+    for i in range(1, len(unique_dates)):
+        if unique_dates[i-1] - unique_dates[i] == timedelta(days=1):
+            temp_streak += 1
+            longest_streak = max(longest_streak, temp_streak)
+        else:
+            temp_streak = 1
+            
+    return {"current_streak": current_streak, "longest_streak": longest_streak}
+
