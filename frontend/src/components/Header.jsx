@@ -60,9 +60,12 @@ const Header = () => {
     if (!user) return;
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("access_token");
+        if (!token) return;
+        const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
         const [streakRes, leaderRes] = await Promise.all([
-          axios.get(`${API_URL}/logs/streak`),
-          axios.get(`${API_URL}/leaderboard`),
+          axios.get(`${API_URL}/logs/streak`, authHeaders),
+          axios.get(`${API_URL}/leaderboard`, authHeaders),
         ]);
         if (streakRes.data) {
           setStreak(streakRes.data.current_streak || 0);

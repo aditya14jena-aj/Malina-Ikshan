@@ -1001,7 +1001,10 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const historyRes = await axios.get(`${API_URL}/api/emissions/progress`);
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+      const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+      const historyRes = await axios.get(`${API_URL}/api/emissions/progress`, authHeaders);
       if (historyRes.data && historyRes.data.history && historyRes.data.history.length > 0) {
         const latest = historyRes.data.history[historyRes.data.history.length - 1];
         setResult(latest);
@@ -1017,12 +1020,14 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
+      const token = localStorage.getItem("access_token");
+      const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
       const logRes = await axios.post(`${API_URL}/api/emissions/daily`, {
         car_km: parseFloat(carKm) || 0,
         bus_km: parseFloat(busKm) || 0,
         electricity_kwh: parseFloat(electricityKwh) || 0,
         diet_type: dietType,
-      });
+      }, authHeaders);
 
       if (logRes.data && logRes.data.log) {
         setResult(logRes.data.log);

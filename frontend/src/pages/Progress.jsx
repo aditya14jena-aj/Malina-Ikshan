@@ -422,7 +422,9 @@ function Progress() {
 
   const fetchProgressData = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/emissions/progress`);
+      const response = await axios.get(`${API_URL}/api/emissions/progress`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
+      });
       if (response.data && response.data.history) {
         const list = response.data.history.map(item => ({
           ...item,

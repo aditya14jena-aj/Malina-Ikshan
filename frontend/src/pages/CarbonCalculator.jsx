@@ -23,6 +23,8 @@ function CarbonCalculator() {
           bus_km: parseFloat(busKm) || 0,
           electricity_kwh: parseFloat(electricityKwh) || 0,
           diet_type: dietType,
+        }, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
         });
       setResult(response.data);
     } catch (err) {

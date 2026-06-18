@@ -10,7 +10,9 @@ function Community() {
     const fetchCommunityData = async () => {
       try {
         const leaderboardRes = await axios.get(
-          `${API_URL}/leaderboard`
+          `${API_URL}/leaderboard`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
+          }
         );
         if (leaderboardRes.data) {
           setLeaderboard(leaderboardRes.data);

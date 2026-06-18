@@ -11,7 +11,9 @@ function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const badgeRes = await axios.get(`${API_URL}/achievements`);
+        const badgeRes = await axios.get(`${API_URL}/achievements`, {
+          headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
+        });
         if (badgeRes.data) {
           setBadges(badgeRes.data);
         }
