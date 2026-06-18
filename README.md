@@ -203,8 +203,6 @@ Built with ❤️ to promote sustainability and climate awareness.
 
 *Malina-Ikshan (मलिन-ईक्षण) — "Pollution Monitor" in Sanskrit*
 
-<<<<<<< HEAD
 </div>
 =======
 </div>
->>>>>>> a8abeaa (Updating APP Showcase)
