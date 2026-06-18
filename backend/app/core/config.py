@@ -13,13 +13,22 @@ ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 # Database settings
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./malina.db")
 
-# CORS Origins
-CORS_ORIGINS_RAW = os.getenv("CORS_ORIGINS", "http://localhost:5173,https://malina-ikshan.vercel.app")
+# CORS Origins — default explicitly includes both local dev and the Vercel production URL.
+# On Render, set the CORS_ORIGINS environment variable to override this if needed.
+CORS_ORIGINS_RAW = os.getenv(
+    "CORS_ORIGINS",
+    "http://localhost:5173,http://localhost:5174,https://malina-ikshan.vercel.app"
+)
 CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_RAW.split(",") if origin.strip()]
+
+# Always ensure the Vercel production origin is present, regardless of env var value
+_PRODUCTION_ORIGIN = "https://malina-ikshan.vercel.app"
+if _PRODUCTION_ORIGIN not in CORS_ORIGINS:
+    CORS_ORIGINS.append(_PRODUCTION_ORIGIN)
 
 # Startup Validation
 if ENV in ["staging", "production"]:
     if SECRET_KEY in ["supersecretkey", "your-secret-key-here", ""]:
         raise ValueError(f"SECRET_KEY cannot be default or empty in {ENV} mode!")
     if "*" in CORS_ORIGINS:
-        CORS_ORIGINS = ["http://localhost:5173", "https://malina-ikshan.vercel.app"]
+        CORS_ORIGINS = ["http://localhost:5173", "http://localhost:5174", "https://malina-ikshan.vercel.app"]

@@ -405,8 +405,8 @@ function Settings() {
     const savedPrefs = localStorage.getItem("settings_preferences");
     const savedGoals = localStorage.getItem("settings_goals");
 
-    setDisplayName(savedDisplayName || user?.username || "MORNINGSTAREDITS");
-    setEmail(savedEmail || user?.email || "warrior@sustainability.com");
+    setDisplayName(savedDisplayName || user?.username || "");
+    setEmail(savedEmail || user?.email || "");
 
     if (savedNotifs) {
       try { setNotifications(JSON.parse(savedNotifs)); } catch (e) { console.error(e); }

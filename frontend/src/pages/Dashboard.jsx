@@ -946,9 +946,9 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   /* Inputs */
-  const [carKm, setCarKm] = useState("15");
-  const [busKm, setBusKm] = useState("10");
-  const [electricityKwh, setElectricityKwh] = useState("8");
+  const [carKm, setCarKm] = useState("");
+  const [busKm, setBusKm] = useState("");
+  const [electricityKwh, setElectricityKwh] = useState("");
   const [dietType, setDietType] = useState("non-vegetarian");
 
   /* Request state */
@@ -970,7 +970,7 @@ function Dashboard() {
   const displayDiet = parseFloat(dietVal.toFixed(2));
 
   const generateLocalCoachAdvice = (scoreValue) => {
-    const score = scoreValue || 67;
+    const score = scoreValue || 0;
     let score_category = "";
     let score_explanation = "";
 
@@ -1048,7 +1048,10 @@ function Dashboard() {
   }, []);
 
   useEffect(() => {
-    setCoachData(generateLocalCoachAdvice(result?.eco_score || 67));
+    // Only update coach data when there is a real result from the API
+    if (result) {
+      setCoachData(generateLocalCoachAdvice(result.eco_score));
+    }
   }, [carKm, busKm, electricityKwh, dietType, result]);
 
   const pieChartData = [

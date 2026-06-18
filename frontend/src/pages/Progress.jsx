@@ -417,7 +417,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 function Progress() {
   const [history, setHistory] = useState([]);
-  const [streaks, setStreaks] = useState({ current_streak: 1, longest_streak: 1 });
+  const [streaks, setStreaks] = useState({ current_streak: 0, longest_streak: 0 });
   const [result, setResult] = useState(null);
 
   const fetchProgressData = async () => {
@@ -426,11 +426,11 @@ function Progress() {
       if (response.data && response.data.history) {
         const list = response.data.history.map(item => ({
           ...item,
-          total: Number(item.total) > 400 ? 9.7 : Number(item.total)
+          total: Number(item.total)
         }));
 
         setHistory(list);
-        setStreaks(response.data.streaks || { current_streak: 1, longest_streak: 1 });
+        setStreaks(response.data.streaks || { current_streak: 0, longest_streak: 0 });
         if (list.length > 0) {
           setResult(list[list.length - 1]);
         }
@@ -452,16 +452,20 @@ function Progress() {
   }, []);
 
   const bestDay = history.length > 0 ? history.reduce((min, p) => (p.total < min.total ? p : min), history[0]) : null;
-  const avgWeekly = history.length > 0 ? (history.reduce((acc, p) => acc + p.total, 0) / history.length).toFixed(2) : "9.70";
-  let insightText = "Fantastic progress! Footprint calculations highlight an active reduction pattern this session window.";
+  const avgWeekly = history.length > 0 ? (history.reduce((acc, p) => acc + p.total, 0) / history.length).toFixed(2) : "--";
+  let insightText = "Log your daily activities on the Dashboard to start tracking emission trends.";
 
   const GOAL_CO2 = 5.0;
   let goalStatus = "";
   let progressPct = 0;
   let progressColor = "";
-  const currentTotal = result ? result.total : 9.7;
+  const currentTotal = result ? result.total : 0;
 
-  if (currentTotal <= GOAL_CO2) {
+  if (!result) {
+    goalStatus = "No data yet";
+    progressPct = 0;
+    progressColor = "bg-gray-300 dark:bg-gray-700";
+  } else if (currentTotal <= GOAL_CO2) {
     goalStatus = "Target Achieved! 🎉";
     progressPct = 100;
     progressColor = "bg-emerald-500";
@@ -483,12 +487,10 @@ function Progress() {
         return `${months[parseInt(parts[1], 10) - 1]} ${parseInt(parts[2], 10)}`;
       }
     }
-    return raw || "Jun 17";
+    return raw;
   };
 
-  const chartData = history.length > 0
-    ? history.map(h => ({ ...h, formattedDate: formatChartDate(h) }))
-    : [{ formattedDate: "Jun 17", total: 9.7 }];
+  const chartData = history.map(h => ({ ...h, formattedDate: formatChartDate(h) }));
 
   return (
     <div className="max-w-7xl mx-auto px-6 lg:px-12 pb-16 pt-4 transition-all duration-300 antialiased selection:bg-indigo-500/30">
@@ -596,7 +598,7 @@ function Progress() {
             </div>
             <div className="bg-white dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 flex items-center shadow-sm dark:shadow-none">
               <div className="h-12 w-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl mr-4 shrink-0">🏆</div>
-              <div><p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Optimized Node</p><h4 className="text-xl font-black text-gray-900 dark:text-white">{bestDay ? bestDay.total : 9.7} <span className="text-[11px] font-medium text-gray-400">kg</span></h4></div>
+              <div><p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Optimized Node</p><h4 className="text-xl font-black text-gray-900 dark:text-white">{bestDay ? bestDay.total : "--"} <span className="text-[11px] font-medium text-gray-400">{bestDay ? "kg" : ""}</span></h4></div>
             </div>
             <div className="bg-white dark:bg-gray-900/50 p-5 rounded-2xl border border-gray-100 dark:border-gray-800/80 flex items-center shadow-sm dark:shadow-none">
               <div className="h-12 w-12 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center text-xl mr-4 shrink-0">🔥</div>
