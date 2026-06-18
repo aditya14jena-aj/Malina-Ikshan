@@ -75,6 +75,7 @@ app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard
 app.include_router(calculator_router, tags=["Calculator"])
 app.include_router(coach_router, tags=["Coach"])
 app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
+app.include_router(notification_router, prefix="/api/notifications", tags=["Notifications"])
 
 @app.get("/")
 def read_root():

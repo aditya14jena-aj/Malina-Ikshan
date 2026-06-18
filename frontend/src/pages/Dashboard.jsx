@@ -931,7 +931,7 @@
 
 //     VERSION UPDATION
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import {
   PieChart,
@@ -941,79 +941,37 @@ import {
   Tooltip as RechartsTooltip,
 } from "recharts";
 import DarkModeToggle from "../components/DarkModeToggle";
+import DashboardContext from "../context/DashboardContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
-  /* Inputs */
-  const [carKm, setCarKm] = useState("");
-  const [busKm, setBusKm] = useState("");
-  const [electricityKwh, setElectricityKwh] = useState("");
-  const [dietType, setDietType] = useState("non-vegetarian");
+  const {
+    result,
+    setResult,
+    coachData,
+    setCoachData,
+    loading,
+    setLoading,
+    error,
+    setError,
+    carKm,
+    setCarKm,
+    busKm,
+    setBusKm,
+    electricityKwh,
+    setElectricityKwh,
+    dietType,
+    setDietType,
+    totalVal,
+    displayTransport,
+    displayElectricity,
+    displayDiet,
+    fetchDashboardData,
+    generateLocalCoachAdvice,
+  } = useContext(DashboardContext);
 
-  /* Request state */
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  /* Result state */
-  const [result, setResult] = useState(null);
-  const [coachData, setCoachData] = useState(null);
   const [notifications, setNotifications] = useState([]);
-
-  const transportVal = (parseFloat(carKm) || 0) * 0.2 + (parseFloat(busKm) || 0) * 0.05;
-  const electricityVal = (parseFloat(electricityKwh) || 0) * 0.4;
-  const dietVal = dietType === "vegetarian" ? 1.5 : 3.0;
-  const totalVal = parseFloat((transportVal + electricityVal + dietVal).toFixed(2));
-
-  const displayTransport = parseFloat(transportVal.toFixed(2));
-  const displayElectricity = parseFloat(electricityVal.toFixed(2));
-  const displayDiet = parseFloat(dietVal.toFixed(2));
-
-  const generateLocalCoachAdvice = (scoreValue) => {
-    const score = scoreValue || 0;
-    let score_category = "";
-    let score_explanation = "";
-
-    if (score >= 90) {
-      score_category = "🌟 Eco Champion";
-      score_explanation = "Outstanding efficiency! You're setting a golden standard.";
-    } else if (score >= 75) {
-      score_category = "🌱 Sustainable";
-      score_explanation = "Great job! Your footprint is under careful management.";
-    } else if (score >= 60) {
-      score_category = "⚖️ Moderate Impact";
-      score_explanation = "Your carbon footprint is hovering around the standard baseline.";
-    } else {
-      score_category = "⚠️ High Impact";
-      score_explanation = "Emissions exceed safe thresholds. Immediate optimization recommended.";
-    }
-
-    return {
-      score,
-      score_category,
-      score_explanation,
-      highlighted_action: totalVal > 5 ? "Consider substituting short car trips with transit or switching up a meal to plant-based options today." : "Exceptional parameters. Maintain your current active regimen!",
-      transport_insight: `Transit accounts for ${Math.round((displayTransport / (totalVal || 1)) * 100)}% of your daily output.`,
-      electricity_insight: `Power grid draw commands ${Math.round((displayElectricity / (totalVal || 1)) * 100)}% of your total footprint.`,
-      diet_insight: `Dietary choices generate ${Math.round((displayDiet / (totalVal || 1)) * 100)}% of today's impact.`,
-    };
-  };
-
-  const fetchDashboardData = async () => {
-    try {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
-      const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
-      const historyRes = await axios.get(`${API_URL}/api/emissions/progress`, authHeaders);
-      if (historyRes.data && historyRes.data.history && historyRes.data.history.length > 0) {
-        const latest = historyRes.data.history[historyRes.data.history.length - 1];
-        setResult(latest);
-        setCoachData(generateLocalCoachAdvice(latest.eco_score));
-      }
-    } catch (e) {
-      console.error("Failed to fetch dashboard data", e);
-    }
-  };
 
   const updateDashboard = async (e) => {
     if (e) e.preventDefault();
@@ -1032,9 +990,15 @@ function Dashboard() {
       if (logRes.data && logRes.data.log) {
         setResult(logRes.data.log);
         setCoachData(generateLocalCoachAdvice(logRes.data.log.eco_score));
+        
+        // Dispatch event with updatedScore and updatedStreak
+        window.dispatchEvent(new CustomEvent("sustainDataUpdated", {
+          detail: {
+            updatedScore: logRes.data.updatedScore,
+            updatedStreak: logRes.data.updatedStreak
+          }
+        }));
       }
-
-      window.dispatchEvent(new Event("sustainDataUpdated"));
 
       if (logRes.data && logRes.data.new_badges && logRes.data.new_badges.length > 0) {
         setNotifications(logRes.data.new_badges);
@@ -1050,14 +1014,13 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [fetchDashboardData]);
 
   useEffect(() => {
-    // Only update coach data when there is a real result from the API
     if (result) {
       setCoachData(generateLocalCoachAdvice(result.eco_score));
     }
-  }, [carKm, busKm, electricityKwh, dietType, result]);
+  }, [carKm, busKm, electricityKwh, dietType, result, generateLocalCoachAdvice, setCoachData]);
 
   const pieChartData = [
     { name: "Transportation", value: displayTransport, color: "#3B82F6" },

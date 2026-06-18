@@ -17,7 +17,7 @@ class LeaderboardEntry(BaseModel):
 def get_leaderboard(db: Session = Depends(get_db)):
     results = db.query(
         User.username,
-        func.avg(EmissionLog.eco_score).label('avg_score')
-    ).join(EmissionLog, User.id == EmissionLog.user_id).group_by(User.id).order_by(desc('avg_score')).limit(10).all()
+        User.score.label('avg_score')
+    ).order_by(desc(User.score)).limit(10).all()
     
-    return [{"username": r.username, "avg_score": round(r.avg_score, 1)} for r in results]
+    return [{"username": r.username, "avg_score": float(r.avg_score)} for r in results]

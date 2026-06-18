@@ -23,7 +23,7 @@ def read_logs(db: Session = Depends(get_db), current_user: User = Depends(get_cu
 
 @router.get("/streak")
 def read_streak(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return get_streaks(db=db, user_id=current_user.id)
+    return {"current_streak": current_user.streak or 0, "longest_streak": current_user.streak or 0}
 
 @router.get("/weekly")
 def read_weekly_logs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -52,6 +52,17 @@ def add_or_update_daily_log(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from datetime import date
+    from sqlalchemy import func
+    from app.models.emission import EmissionLog
+
+    # Check if a log existed for today before saving
+    today = date.today()
+    had_log_today = db.query(EmissionLog).filter(
+        EmissionLog.user_id == current_user.id,
+        func.date(EmissionLog.date) == today
+    ).first() is not None
+
     db_log = save_or_update_daily_log(
         db=db,
         user_id=current_user.id,
@@ -61,7 +72,27 @@ def add_or_update_daily_log(
         diet_type=data.diet_type
     )
     new_badges = evaluate_badges(db=db, user_id=current_user.id, current_log=db_log)
-    return {"log": db_log, "new_badges": new_badges}
+
+    # Goal met if eco_score is >= 70 (high efficiency)
+    goal_met = db_log.eco_score >= 70
+
+    if goal_met and not had_log_today:
+        current_user.streak = (current_user.streak or 0) + 1
+        current_user.score = (current_user.score or 0) + 20 # Add 20 points
+        db.commit()
+        db.refresh(current_user)
+    elif not had_log_today:
+        # Logged but goal not met
+        current_user.score = (current_user.score or 0) + 5 # Small completion reward
+        db.commit()
+        db.refresh(current_user)
+
+    return {
+        "log": db_log,
+        "new_badges": new_badges,
+        "updatedScore": current_user.score,
+        "updatedStreak": current_user.streak
+    }
 
 @router.get("/progress")
 def read_progress(
@@ -69,6 +100,5 @@ def read_progress(
     current_user: User = Depends(get_current_user)
 ):
     history = read_weekly_logs(db=db, current_user=current_user)
-    streaks = read_streak(db=db, current_user=current_user)
-    return {"history": history, "streaks": streaks}
+    return {"history": history, "streaks": {"current_streak": current_user.streak}}
 

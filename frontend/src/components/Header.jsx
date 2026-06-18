@@ -56,6 +56,7 @@ const Header = () => {
       console.error("Failed to fetch notifications", err);
     }
   };
+
   useEffect(() => {
     if (!user) return;
     const fetchData = async () => {
@@ -82,6 +83,17 @@ const Header = () => {
     };
     fetchData();
   }, [user]);
+
+  useEffect(() => {
+    const handleSync = (e) => {
+      if (e.detail) {
+        if (e.detail.updatedScore !== undefined) setEcoScore(e.detail.updatedScore);
+        if (e.detail.updatedStreak !== undefined) setStreak(e.detail.updatedStreak);
+      }
+    };
+    window.addEventListener("sustainDataUpdated", handleSync);
+    return () => window.removeEventListener("sustainDataUpdated", handleSync);
+  }, []);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -171,6 +183,20 @@ const Header = () => {
 
                 if (!showNotifications) {
                   fetchNotifications();
+                  if (unreadCount > 0) {
+                    const token = localStorage.getItem("access_token");
+                    axios.post(
+                      `${API_URL}/api/notifications/mark-read`,
+                      {},
+                      {
+                        headers: {
+                          Authorization: `Bearer ${token}`
+                        }
+                      }
+                    )
+                    .then(() => setUnreadCount(0))
+                    .catch((err) => console.error("Failed to mark notifications read", err));
+                  }
                 }
               }}
               className="p-2 text-text-muted hover:text-text-main dark:text-text-muted dark:hover:text-text-main hover:bg-surface2 dark:hover:bg-[#1a1a1a] rounded-full transition-colors relative"

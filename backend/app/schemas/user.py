@@ -15,6 +15,8 @@ class UserResponse(BaseModel):
     id: int
     username: str
     email: str
+    score: int
+    streak: int
     created_at: datetime
 
     model_config = {"from_attributes": True}

@@ -20,6 +20,8 @@ from typing import List, Any
 class EmissionLogWithBadgesResponse(BaseModel):
     log: EmissionLogResponse
     new_badges: List[Any] = []
+    updatedScore: int = 0
+    updatedStreak: int = 0
 
 class DailyEmissionRequest(BaseModel):
     car_km: float

@@ -60,6 +60,15 @@ def mark_all_notifications_read(
     return {"success": True, "message": f"Marked {count} notifications as read"}
 
 
+@router.post("/mark-read", response_model=MarkReadResponse)
+def mark_read(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    count = mark_all_as_read(db=db, user_id=current_user.id)
+    return {"success": True, "message": f"Marked {count} notifications as read"}
+
+
 @router.delete("/{notif_id}", response_model=DeleteResponse)
 def remove_notification(
     notif_id: int,
