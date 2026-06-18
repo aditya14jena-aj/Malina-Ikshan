@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Community() {
   const [leaderboard, setLeaderboard] = useState([]);
 
@@ -8,7 +10,7 @@ function Community() {
     const fetchCommunityData = async () => {
       try {
         const leaderboardRes = await axios.get(
-          "http://https://malina-ikshan.onrender.com/leaderboard"
+          `${API_URL}/leaderboard`
         );
         if (leaderboardRes.data) {
           setLeaderboard(leaderboardRes.data);

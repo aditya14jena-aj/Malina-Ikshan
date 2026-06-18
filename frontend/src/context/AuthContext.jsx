@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   );
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const API_URL = "https://malina-ikshan.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL;
   /* Adjust as needed */ useEffect(() => {
     const initAuth = () => {
       const storedToken = localStorage.getItem("access_token");

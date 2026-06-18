@@ -19,37 +19,42 @@ const Header = () => {
   }, []);
 
   const fetchNotificationsCount = async () => {
-    const token = localStorage.getItem("token");
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
 
-    const res = await axios.get(
-      `${import.meta.env.VITE_API_URL}/notifications/count`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-
-    const fetchNotifications = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        const res = await axios.get(
-          `${API_URL}/notifications`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+      const res = await axios.get(
+        `${API_URL}/notifications/count`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
-        );
+        }
+      );
+      setUnreadCount(res.data.unread_count || 0);
+    } catch (err) {
+      console.error("Failed to fetch notifications count", err);
+    }
+  };
 
-        setNotifications(res.data);
-      } catch (err) {
-        console.error("Failed to fetch notifications", err);
-      }
-    };
+  const fetchNotifications = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
 
-    setUnreadCount(res.data.unread_count);
+      const res = await axios.get(
+        `${API_URL}/notifications`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setNotifications(res.data);
+    } catch (err) {
+      console.error("Failed to fetch notifications", err);
+    }
   };
   useEffect(() => {
     if (!user) return;

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 function CarbonCalculator() {
   const [carKm, setCarKm] = useState("");
   const [busKm, setBusKm] = useState("");
@@ -15,7 +18,7 @@ function CarbonCalculator() {
     setResult(null);
     try {
       /* Pointing to FastAPI default host. Adjust port if needed. */ const response =
-        await axios.post("http://https://malina-ikshan.onrender.com/calculate", {
+        await axios.post(`${API_URL}/calculate`, {
           car_km: parseFloat(carKm) || 0,
           bus_km: parseFloat(busKm) || 0,
           electricity_kwh: parseFloat(electricityKwh) || 0,

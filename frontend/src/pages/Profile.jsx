@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import AuthContext from "../context/AuthContext";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Profile() {
   const [badges, setBadges] = useState([]);
   const { user, logout } = useContext(AuthContext);
@@ -9,7 +11,7 @@ function Profile() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const badgeRes = await axios.get("http://https://malina-ikshan.onrender.com/achievements");
+        const badgeRes = await axios.get(`${API_URL}/achievements`);
         if (badgeRes.data) {
           setBadges(badgeRes.data);
         }

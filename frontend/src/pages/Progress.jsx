@@ -413,6 +413,8 @@ import {
   Tooltip as RechartsTooltip,
 } from "recharts";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Progress() {
   const [history, setHistory] = useState([]);
   const [streaks, setStreaks] = useState({ current_streak: 1, longest_streak: 1 });
@@ -420,7 +422,7 @@ function Progress() {
 
   const fetchProgressData = async () => {
     try {
-      const response = await axios.get("http://https://malina-ikshan.onrender.com/api/emissions/progress");
+      const response = await axios.get(`${API_URL}/api/emissions/progress`);
       if (response.data && response.data.history) {
         const list = response.data.history.map(item => ({
           ...item,

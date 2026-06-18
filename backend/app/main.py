@@ -49,6 +49,7 @@ from app.api.auth import router as auth_router
 from app.api.emission import router as emission_router
 from app.api.achievement import router as achievement_router
 from app.api.leaderboard import router as leaderboard_router
+from app.api.notification import router as notification_router
 
 from app.core import config
 
@@ -73,6 +74,7 @@ app.include_router(achievement_router, prefix="/achievements", tags=["Achievemen
 app.include_router(leaderboard_router, prefix="/leaderboard", tags=["Leaderboard"])
 app.include_router(calculator_router, tags=["Calculator"])
 app.include_router(coach_router, tags=["Coach"])
+app.include_router(notification_router, prefix="/notifications", tags=["Notifications"])
 
 @app.get("/")
 def read_root():

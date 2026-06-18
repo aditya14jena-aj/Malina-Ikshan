@@ -942,6 +942,8 @@ import {
 } from "recharts";
 import DarkModeToggle from "../components/DarkModeToggle";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function Dashboard() {
   /* Inputs */
   const [carKm, setCarKm] = useState("15");
@@ -999,7 +1001,7 @@ function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const historyRes = await axios.get("http://https://malina-ikshan.onrender.com/api/emissions/progress");
+      const historyRes = await axios.get(`${API_URL}/api/emissions/progress`);
       if (historyRes.data && historyRes.data.history && historyRes.data.history.length > 0) {
         const latest = historyRes.data.history[historyRes.data.history.length - 1];
         setResult(latest);
@@ -1015,7 +1017,7 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const logRes = await axios.post("http://https://malina-ikshan.onrender.com/api/emissions/daily", {
+      const logRes = await axios.post(`${API_URL}/api/emissions/daily`, {
         car_km: parseFloat(carKm) || 0,
         bus_km: parseFloat(busKm) || 0,
         electricity_kwh: parseFloat(electricityKwh) || 0,
