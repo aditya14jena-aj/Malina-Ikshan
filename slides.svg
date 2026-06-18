@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1600" width="100%" height="100%">
+  <defs>
+    <filter id="deckShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="25" stdDeviation="30" flood-opacity="0.35" flood-color="#000000"/>
+    </filter>
+    
+    <clipPath id="cardRadius">
+      <rect x="0" y="0" width="1600" height="1200" rx="50" ry="50" />
+    </clipPath>
+
+    <style>
+      /* CARD 1: Flies out left, while out it becomes the top visual priority */
+      @keyframes dynamicShuffle1 {
+        0%, 40% { 
+          transform: translate(200px, 200px) scale(1) rotate(0deg); 
+          opacity: 1;
+        }
+        48% { 
+          transform: translate(-1200px, 100px) scale(0.9) rotate(-8deg); 
+          opacity: 1;
+        }
+        /* Fades down to 0 while moving back to the center so Card 2 completely shines */
+        52% {
+          opacity: 0;
+        }
+        55%, 95% { 
+          transform: translate(200px, 200px) scale(0.88) rotate(4deg); 
+          opacity: 0; 
+        }
+        100% {
+          transform: translate(200px, 200px) scale(1) rotate(0deg); 
+          opacity: 1;
+        }
+      }
+
+      /* CARD 2: Invisible/hidden initially, then flies out right to take center stage */
+      @keyframes dynamicShuffle2 {
+        0%, 40% { 
+          transform: translate(200px, 200px) scale(0.88) rotate(4deg); 
+          opacity: 0;
+        }
+        44% {
+          opacity: 1;
+        }
+        48% { 
+          transform: translate(1600px, 300px) scale(0.9) rotate(8deg); 
+          opacity: 1;
+        }
+        55%, 95% { 
+          transform: translate(200px, 200px) scale(1) rotate(0deg); 
+          opacity: 1;
+        }
+        100% { 
+          transform: translate(200px, 200px) scale(0.88) rotate(4deg); 
+          opacity: 0;
+        }
+      }
+
+      .card-wrap {
+        transform-origin: center center;
+        filter: url(#deckShadow);
+      }
+
+      .card-1 {
+        animation: dynamicShuffle1 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+      }
+      .card-2 {
+        animation: dynamicShuffle2 6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+      }
+
+      .deck:hover .card-wrap {
+        animation-play-state: paused !important;
+      }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="transparent"/>
+
+  <g class="deck">
+    <g class="card-wrap card-1">
+      <rect x="0" y="0" width="1600" height="1200" rx="50" ry="50" fill="#ffffff" />
+      <g clip-path="url(#cardRadius)">
+        <image href="screenshots/1.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
+      </g>
+    </g>
+
+    <g class="card-wrap card-2">
+      <rect x="0" y="0" width="1600" height="1200" rx="50" ry="50" fill="#ffffff" />
+      <g clip-path="url(#cardRadius)">
+        <image href="screenshots/2.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
+      </g>
+    </g>
+  </g>
+</svg>

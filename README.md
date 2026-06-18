@@ -184,6 +184,15 @@ Full interactive documentation available at [`/docs`](https://malina-ikshan.onre
 
 ---
 
+<<<<<<< HEAD
+=======
+## 📸 App Showcase
+
+![Malina Ikshan Showcase](slides.svg)
+
+---
+
+>>>>>>> a8abeaa (Updating APP Showcase)
 ## 📄 License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
@@ -196,4 +205,8 @@ Built with ❤️ to promote sustainability and climate awareness.
 
 *Malina-Ikshan (मलिन-ईक्षण) — "Pollution Monitor" in Sanskrit*
 
+<<<<<<< HEAD
 </div>
+=======
+</div>
+>>>>>>> a8abeaa (Updating APP Showcase)
