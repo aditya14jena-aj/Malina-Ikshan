@@ -19,7 +19,6 @@
           transform: translate(-1200px, 100px) scale(0.9) rotate(-8deg); 
           opacity: 1;
         }
-        /* Fades down to 0 while moving back to the center so Card 2 completely shines */
         52% {
           opacity: 0;
         }
@@ -80,14 +79,14 @@
     <g class="card-wrap card-1">
       <rect x="0" y="0" width="1600" height="1200" rx="50" ry="50" fill="#ffffff" />
       <g clip-path="url(#cardRadius)">
-        <image href="screenshots/1.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
+        <image href="https://raw.githubusercontent.com/aditya14jena-aj/Malina-Ikshan/main/screenshots/1.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
       </g>
     </g>
 
     <g class="card-wrap card-2">
       <rect x="0" y="0" width="1600" height="1200" rx="50" ry="50" fill="#ffffff" />
       <g clip-path="url(#cardRadius)">
-        <image href="screenshots/2.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
+        <image href="https://raw.githubusercontent.com/aditya14jena-aj/Malina-Ikshan/main/screenshots/2.png" x="0" y="0" width="1600" height="1200" preserveAspectRatio="xMidYMid slice"/>
       </g>
     </g>
   </g>

@@ -184,7 +184,6 @@ Full interactive documentation available at [`/docs`](https://malina-ikshan.onre
 
 ---
 
-<<<<<<< HEAD
 =======
 ## 📸 App Showcase
 
@@ -192,7 +191,6 @@ Full interactive documentation available at [`/docs`](https://malina-ikshan.onre
 
 ---
 
->>>>>>> a8abeaa (Updating APP Showcase)
 ## 📄 License
 
 Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
