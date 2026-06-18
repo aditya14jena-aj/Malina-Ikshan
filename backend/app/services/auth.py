@@ -26,7 +26,7 @@ def create_user(db: Session, user: UserCreate):
 
     create_notification(
     db=db,
-    user_id=user.id,
+    user_id=db_user.id,
     title="Welcome to Malina-Ikshan 🌱",
     message="Your sustainability journey starts now. Record your first footprint to unlock achievements.",
     notif_type="system")

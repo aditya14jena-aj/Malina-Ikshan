@@ -28,6 +28,21 @@ export const AuthProvider = ({ children }) => {
     };
     initAuth();
   }, []);
+  const formatError = (error, fallback) => {
+    const detail = error.response?.data?.detail;
+    if (!detail) return fallback;
+    if (typeof detail === "string") return detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((err) => {
+          const field = err.loc && err.loc.length > 1 ? `${err.loc[1]}: ` : "";
+          return `${field}${err.msg}`;
+        })
+        .join(", ");
+    }
+    return typeof detail === "object" ? JSON.stringify(detail) : String(detail);
+  };
+
   const login = async (email, password) => {
     try {
       const response = await axios.post(`${API_URL}/login`, {
@@ -35,6 +50,7 @@ export const AuthProvider = ({ children }) => {
         password,
       });
       const { access_token, username } = response.data;
+
       localStorage.setItem("access_token", access_token);
       localStorage.setItem("username", username);
       setToken(access_token);
@@ -45,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.detail || "Login failed",
+        message: formatError(error, "Login failed"),
       };
     }
   };
@@ -59,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        message: error.response?.data?.detail || "Registration failed",
+        message: formatError(error, "Registration failed"),
       };
     }
   };
