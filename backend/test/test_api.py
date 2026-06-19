@@ -167,3 +167,15 @@ def test_database_tables_exist():
     tables = inspector.get_table_names()
 
     assert "users" in tables
+
+def test_docs_endpoint():
+    response = client.get("/docs")
+    assert response.status_code == 200
+
+def test_openapi_schema():
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+
+def test_root_response_type():
+    response = client.get("/")
+    assert isinstance(response.json(), dict)

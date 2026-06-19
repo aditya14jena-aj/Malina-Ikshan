@@ -217,14 +217,17 @@ const Header = () => {
               </svg>
 
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-bold">
+                <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 rounded-full bg-rose-500 text-white text-[10px] flex items-center justify-center font-bold shadow-sm z-10">
                   {unreadCount}
                 </span>
               )}
             </button>
 
             {showNotifications && (
-              <div className="absolute right-0 mt-3 w-96 bg-surface dark:bg-[#111] rounded-2xl shadow-xl border border-border dark:border-[#222] overflow-hidden z-50">
+              <div 
+                className="absolute right-0 mt-3 bg-surface/80 dark:bg-[#111]/80 backdrop-blur-[8px] rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-50"
+                style={{ width: 'min(380px, 90vw)', maxWidth: '90vw' }}
+              >
 
                 <div className="px-4 py-3 border-b border-border dark:border-[#222]">
                   <h3 className="font-bold text-text-main">
@@ -242,7 +245,7 @@ const Header = () => {
                     notifications.map((n) => (
                       <div
                         key={n.id}
-                        className="p-4 border-b border-border dark:border-[#222] hover:bg-surface2 dark:hover:bg-[#1a1a1a]"
+                        className="p-4 border-b border-border/50 dark:border-[#222]/50 hover:bg-surface2/50 dark:hover:bg-[#1a1a1a]/50 transition-colors duration-300"
                       >
                         <div className="flex gap-3">
 
@@ -262,7 +265,7 @@ const Header = () => {
                               {n.title}
                             </p>
 
-                            <p className="text-sm text-text-muted">
+                            <p className="text-sm text-text-muted break-words whitespace-normal" style={{ overflowWrap: 'break-word' }}>
                               {n.message}
                             </p>
                           </div>

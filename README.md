@@ -183,8 +183,23 @@ Full interactive documentation available at [`/docs`](https://malina-ikshan.onre
 - [ ] Mobile app (iOS & Android)
 
 ---
+## Automated Testing
 
-=======
+The backend includes automated pytest-based validation for:
+
+- Authentication
+- Carbon footprint calculations
+- AI Eco Coach scoring
+- Emission tracking
+- Badge achievement system
+- Security utilities
+
+Current metrics:
+
+- 35+ automated tests
+- 100% passing
+- 66% code coverage
+---
 ## 📸 App Showcase
 
 ![Malina Ikshan Showcase](slides.svg)

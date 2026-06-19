@@ -36,7 +36,7 @@ const Navbar = () => {
         </div>{" "}
       </aside>{" "}
       {/* Mobile Bottom Bar */}{" "}
-      <nav className="lg:hidden fixed bottom-0 w-full bg-surface border-t border-border z-50 px-2 pb-safe pt-2">
+      <nav className="lg:hidden fixed bottom-0 w-full bg-surface/80 dark:bg-[#0a0a0a]/80 backdrop-blur-[8px] border-t border-border/50 dark:border-[#222]/50 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 px-2 pb-safe pt-2">
         {" "}
         <div className="flex justify-around items-center h-14">
           {" "}

@@ -1,3 +1,4 @@
+from app.services.notification import create_notification
 from sqlalchemy.orm import Session
 from app.models.achievement import UserBadge
 from app.models.emission import EmissionLog
@@ -61,6 +62,20 @@ def evaluate_badges(db: Session, user_id: int, current_log: EmissionLog):
             icon=badge_data["icon"]
         )
         db.add(db_badge)
+#         create_notification(
+#         db=db,
+#         user_id=user_id,
+#         title="Badge Unlocked!",
+#         message=f"You earned {badge_name} {badge_data['icon']}"
+# )
+        create_notification(
+        db=db,
+        user_id=user_id,
+        title="Badge Unlocked!",
+        message=f"You earned {badge_name} {badge_data['icon']}",
+        notif_type="achievement"
+    )
+    
         unlocked_objects.append(db_badge)
         
     if unlocked_objects:

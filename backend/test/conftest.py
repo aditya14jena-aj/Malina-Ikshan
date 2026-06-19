@@ -37,6 +37,10 @@ from app.models.user import User
 from app.models.emission import EmissionLog
 from app.models.notification import Notification
 from app.models.achievement import UserBadge
+import pytest
+from sqlalchemy.orm import sessionmaker
+
+from app.database.session import SessionLocal
 
 
 def pytest_sessionstart(session):
@@ -56,4 +60,28 @@ def pytest_sessionstart(session):
     missing tables.
     """
 
+    Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
+
+
+
+TestingSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
+
+@pytest.fixture
+def db_session():
+    """
+    Fresh database session for each test.
+    """
+
+    db = SessionLocal()
+
+    try:
+        yield db
+    finally:
+        db.rollback()
+        db.close()
