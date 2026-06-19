@@ -225,7 +225,7 @@ const Header = () => {
 
             {showNotifications && (
               <div 
-                className="absolute right-0 mt-3 bg-surface/80 dark:bg-[#111]/80 backdrop-blur-[8px] rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-50"
+                className="absolute right-0 mt-3 bg-surface/80 dark:bg-[#111]/80 backdrop-blur-[8px] rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-[100]"
                 style={{ width: 'min(380px, 90vw)', maxWidth: '90vw' }}
               >
 
@@ -235,7 +235,7 @@ const Header = () => {
                   </h3>
                 </div>
 
-                <div className="max-h-[400px] overflow-y-auto">
+                <div className="max-h-[60vh] overflow-y-auto">
 
                   {notifications.length === 0 ? (
                     <div className="p-6 text-center text-sm text-text-muted">

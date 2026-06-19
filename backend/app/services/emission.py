@@ -107,7 +107,38 @@ def save_or_update_daily_log(
         total=total
     )
     coach_advice = CoachService.get_coach_advice(coach_req)
-    eco_score = coach_advice.score
+    base_eco_score = coach_advice.score
+
+    # -----------------------------
+    # Gamified Scoring Algorithm
+    # -----------------------------
+    import random
+    
+    # 1. Base Reward
+    base_reward = 10
+    
+    # 2. Eco Performance Multiplier
+    if base_eco_score >= 90:
+        multiplier = 2.0
+    elif base_eco_score >= 75:
+        multiplier = 1.5
+    elif base_eco_score >= 60:
+        multiplier = 1.0
+    else:
+        multiplier = 0.5
+        
+    # 3. Streak Bonus
+    streak_data = get_streaks(db, user_id)
+    streak_bonus = streak_data.get("current_streak", 0) * 2
+    
+    # 4. Engagement Randomness
+    random_bonus = random.randint(0, 5)
+    
+    # 5. Low Score Penalty
+    penalty = 15 if base_eco_score < 40 else 0
+    
+    calculated_score = (base_reward * multiplier) + streak_bonus + random_bonus - penalty
+    eco_score = max(0, int(calculated_score))
 
     # -----------------------------
     # 3. SAFE "TODAY" DETECTION (FIXED)
