@@ -194,8 +194,8 @@ const Header = () => {
                         }
                       }
                     )
-                    .then(() => setUnreadCount(0))
-                    .catch((err) => console.error("Failed to mark notifications read", err));
+                      .then(() => setUnreadCount(0))
+                      .catch((err) => console.error("Failed to mark notifications read", err));
                   }
                 }
               }}
@@ -224,8 +224,12 @@ const Header = () => {
             </button>
 
             {showNotifications && (
-              <div 
-                className="absolute right-0 mt-3 bg-surface/80 dark:bg-[#111]/80 backdrop-blur-[8px] rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-[100]"
+              // <div 
+              //   className="absolute right-0 mt-3 bg-surface/80 dark:bg-[#111]/80 backdrop-blur-[8px] rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-[100]"
+              //   style={{ width: 'min(380px, 90vw)', maxWidth: '90vw' }}
+              // >
+              <div
+                className="absolute right-0 md:right-0 left-auto max-md:fixed max-md:top-16 max-md:left-1/2 max-md:-translate-x-1/2 mt-3 bg-white/80 dark:bg-[#111]/80 backdrop-blur-md rounded-2xl shadow-lg border border-border/50 dark:border-[#222]/50 overflow-hidden z-[100]"
                 style={{ width: 'min(380px, 90vw)', maxWidth: '90vw' }}
               >
 
