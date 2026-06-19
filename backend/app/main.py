@@ -56,8 +56,13 @@ from app.core import config
 
 app = FastAPI(title="Malina-Ikshan API", version="1.0.0")
 
-# CREATE TABLES
-Base.metadata.create_all(bind=engine)
+
+@app.on_event("startup")
+def startup():
+    # CREATE TABLES
+    Base.metadata.create_all(bind=engine)
+
+
 
 app.add_middleware(
     CORSMiddleware,

@@ -15,6 +15,7 @@ env/
 # DB
 *.sqlite3
 *.db
+test.db
 
 # OS
 .DS_Store

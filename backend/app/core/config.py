@@ -11,7 +11,7 @@ JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 # Database settings
-_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://malina_isika_user:A4K3Jafk34q1fDqSjbEp0QnXOZLA59Mp@dpg-d8pnsg77f7vs73d5sftg-a/malina_isika")
+_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./malina.db")
 if _DATABASE_URL and _DATABASE_URL.startswith("postgres://"):
     _DATABASE_URL = _DATABASE_URL.replace("postgres://", "postgresql://", 1)
 DATABASE_URL = _DATABASE_URL
