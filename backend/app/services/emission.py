@@ -4,6 +4,7 @@ from app.models.emission import EmissionLog
 from app.schemas.emission import EmissionLogCreate
 from datetime import date, datetime
 from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
 
 from app.models.emission import EmissionLog
 from app.services.coach import CoachService
@@ -179,34 +180,29 @@ def save_or_update_daily_log(
         eco_score=eco_score
     )
 
-    db.add(db_log)
-    db.commit()
-    db.refresh(db_log)
-
-    return db_log
-    
-    if today_log:
-        today_log.transport = round(transport, 2)
-        today_log.electricity = round(electricity, 2)
-        today_log.diet = round(diet, 2)
-        today_log.total = round(total, 2)
-        today_log.eco_score = eco_score
-        db.commit()
-        db.refresh(today_log)
-        db_log = today_log
-    else:
-        db_log = EmissionLog(
-            user_id=user_id,
-            transport=round(transport, 2),
-            electricity=round(electricity, 2),
-            diet=round(diet, 2),
-            total=round(total, 2),
-            eco_score=eco_score
-        )
+    try:
         db.add(db_log)
         db.commit()
         db.refresh(db_log)
-        
+    except IntegrityError:
+        db.rollback()
+        # Handle the race condition by fetching the newly inserted log and updating it
+        today_log = db.query(EmissionLog).filter(
+            EmissionLog.user_id == user_id,
+            EmissionLog.date >= today_start,
+            EmissionLog.date <= today_end
+        ).first()
+        if today_log:
+            today_log.transport = round(transport, 2)
+            today_log.electricity = round(electricity, 2)
+            today_log.diet = round(diet, 2)
+            today_log.total = round(total, 2)
+            today_log.eco_score = eco_score
+            db.commit()
+            db.refresh(today_log)
+            return today_log
+        raise
+
     return db_log
 
 

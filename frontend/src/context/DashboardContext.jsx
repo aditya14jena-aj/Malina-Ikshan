@@ -14,12 +14,13 @@ export const DashboardProvider = ({ children }) => {
   const [busKm, setBusKm] = useState("");
   const [electricityKwh, setElectricityKwh] = useState("");
   const [dietType, setDietType] = useState("non-vegetarian");
+  const [isEditing, setIsEditing] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL;
 
-  const transportVal = (parseFloat(carKm) || 0) * 0.2 + (parseFloat(busKm) || 0) * 0.05;
-  const electricityVal = (parseFloat(electricityKwh) || 0) * 0.4;
-  const dietVal = dietType === "vegetarian" ? 1.5 : 3.0;
+  const transportVal = isEditing ? (parseFloat(carKm) || 0) * 0.2 + (parseFloat(busKm) || 0) * 0.05 : (result?.transport || 0);
+  const electricityVal = isEditing ? (parseFloat(electricityKwh) || 0) * 0.4 : (result?.electricity || 0);
+  const dietVal = isEditing ? (dietType === "vegetarian" ? 1.5 : 3.0) : (result?.diet || 0);
   const totalVal = parseFloat((transportVal + electricityVal + dietVal).toFixed(2));
 
   const displayTransport = parseFloat(transportVal.toFixed(2));
@@ -101,6 +102,8 @@ export const DashboardProvider = ({ children }) => {
         displayDiet,
         fetchDashboardData,
         generateLocalCoachAdvice,
+        isEditing,
+        setIsEditing,
       }}
     >
       {children}

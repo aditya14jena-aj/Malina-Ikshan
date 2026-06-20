@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime
 
 class EmissionLogCreate(BaseModel):
@@ -24,9 +24,9 @@ class EmissionLogWithBadgesResponse(BaseModel):
     updatedStreak: int = 0
 
 class DailyEmissionRequest(BaseModel):
-    car_km: float
-    bus_km: float
-    electricity_kwh: float
-    diet_type: str
+    car_km: float = Field(default=0.0)
+    bus_km: float = Field(default=0.0)
+    electricity_kwh: float = Field(default=0.0)
+    diet_type: str = Field(default="non-vegetarian")
 
 

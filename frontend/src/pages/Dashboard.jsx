@@ -969,28 +969,51 @@ function Dashboard() {
     displayDiet,
     fetchDashboardData,
     generateLocalCoachAdvice,
+    isEditing,
+    setIsEditing,
   } = useContext(DashboardContext);
 
   const [notifications, setNotifications] = useState([]);
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem('has_boarded')) {
+      setShowTutorial(true);
+    }
+  }, []);
+
+  const closeTutorial = () => {
+    localStorage.setItem('has_boarded', 'true');
+    setShowTutorial(false);
+  };
 
   const updateDashboard = async (e) => {
     if (e) e.preventDefault();
+
+    const parsedCar = parseFloat(carKm) || 0;
+    const parsedBus = parseFloat(busKm) || 0;
+    const parsedElec = parseFloat(electricityKwh) || 0;
+
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("access_token");
       const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
       const logRes = await axios.post(`${API_URL}/api/emissions/daily`, {
-        car_km: parseFloat(carKm) || 0,
-        bus_km: parseFloat(busKm) || 0,
-        electricity_kwh: parseFloat(electricityKwh) || 0,
-        diet_type: dietType,
+        car_km: parsedCar,
+        bus_km: parsedBus,
+        electricity_kwh: parsedElec,
+        diet_type: dietType || "non-vegetarian",
       }, authHeaders);
 
       if (logRes.data && logRes.data.log) {
         setResult(logRes.data.log);
         setCoachData(generateLocalCoachAdvice(logRes.data.log.eco_score));
-        
+        setIsEditing(false);
+        setCarKm("");
+        setBusKm("");
+        setElectricityKwh("");
+
         // Dispatch event with updatedScore and updatedStreak
         window.dispatchEvent(new CustomEvent("sustainDataUpdated", {
           detail: {
@@ -1095,25 +1118,27 @@ function Dashboard() {
 
             <form onSubmit={updateDashboard} className="space-y-5">
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Car Logistics (KM)</label>
-                <input type="number" min="0" step="any" value={carKm} onChange={(e) => setCarKm(e.target.value)} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:border-emerald-500 transition-colors" />
+                <label htmlFor="carKm" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Car Logistics (KM)</label>
+                <input id="carKm" type="number" min="0" step="any" value={carKm} onChange={(e) => { setCarKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Public Bus (KM)</label>
-                <input type="number" min="0" step="any" value={busKm} onChange={(e) => setBusKm(e.target.value)} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:border-emerald-500 transition-colors" />
+                <label htmlFor="busKm" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Public Bus (KM)</label>
+                <input id="busKm" type="number" min="0" step="any" value={busKm} onChange={(e) => { setBusKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Grid Electricity (KWH)</label>
-                <input type="number" min="0" step="any" value={electricityKwh} onChange={(e) => setElectricityKwh(e.target.value)} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:border-emerald-500 transition-colors" />
+                <label htmlFor="electricityKwh" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Grid Electricity (KWH)</label>
+                <input id="electricityKwh" type="number" min="0" step="any" value={electricityKwh} onChange={(e) => { setElectricityKwh(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Dietary Profile</label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button type="button" onClick={() => setDietType("vegetarian")} className={`py-3 px-4 text-xs font-bold rounded-xl border transition-all duration-200 ${dietType === "vegetarian" ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/10" : "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800/80 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>Vegetarian</button>
-                  <button type="button" onClick={() => setDietType("non-vegetarian")} className={`py-3 px-4 text-xs font-bold rounded-xl border transition-all duration-200 ${dietType === "non-vegetarian" ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/10" : "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800/80 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>Omnivore / Non-Veg</button>
-                </div>
+                <fieldset>
+                  <legend className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2.5">Dietary Profile</legend>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button type="button" aria-pressed={dietType === "vegetarian"} onClick={() => { setDietType("vegetarian"); setIsEditing(true); }} className={`py-3 px-4 text-xs font-bold rounded-xl border transition-all duration-200 focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 ${dietType === "vegetarian" ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/10" : "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800/80 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>Vegetarian</button>
+                    <button type="button" aria-pressed={dietType === "non-vegetarian"} onClick={() => { setDietType("non-vegetarian"); setIsEditing(true); }} className={`py-3 px-4 text-xs font-bold rounded-xl border transition-all duration-200 focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 ${dietType === "non-vegetarian" ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-600/10" : "bg-gray-50 dark:bg-gray-950 border-gray-200 dark:border-gray-800/80 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"}`}>Omnivore / Non-Veg</button>
+                  </div>
+                </fieldset>
               </div>
-              <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 px-4 rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-emerald-600/10 transition-all duration-200 disabled:from-gray-600 disabled:to-gray-700 mt-4 border-none cursor-pointer">
+              <button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-4 px-4 rounded-xl text-xs uppercase tracking-widest shadow-lg shadow-emerald-600/10 transition-all duration-200 disabled:from-gray-600 disabled:to-gray-700 mt-4 border-none cursor-pointer focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500">
                 {loading ? "Recalculating Data..." : "Synchronize Metrics"}
               </button>
             </form>
@@ -1223,6 +1248,29 @@ function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Onboarding Tutorial Overlay */}
+      {showTutorial && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm px-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-emerald-500/30">
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Welcome to Malina-Ikshan! 🌱</h2>
+            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
+              Let's get started on your sustainability journey.
+              <br /><br />
+              <strong>1. Activity Parameters:</strong> Enter your daily car/bus distance and electricity usage here on the left.<br />
+              <strong>2. Dietary Profile:</strong> Select your general diet for today.<br />
+              <strong>3. Sync:</strong> Hit <strong>"Synchronize Metrics"</strong> to push your data to the AI Engine.<br />
+              <strong>4. Insights:</strong> Watch your footprint metrics update and get live coaching advice from the AI on the right.
+            </p>
+            <button
+              onClick={closeTutorial}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500"
+            >
+              Let's Go!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

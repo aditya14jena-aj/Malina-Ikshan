@@ -20,7 +20,7 @@ DATABASE_URL = _DATABASE_URL
 # On Render, set the CORS_ORIGINS environment variable to override this if needed.
 CORS_ORIGINS_RAW = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,https://malina-ikshan.vercel.app"
+    "http://localhost:5173"
 )
 CORS_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_RAW.split(",") if origin.strip()]
 
