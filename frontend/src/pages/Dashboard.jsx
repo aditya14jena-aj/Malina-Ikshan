@@ -189,15 +189,15 @@ function Dashboard() {
               <div className={`space-y-4 ${tourStep === 1 ? 'relative z-[150] ring-4 ring-emerald-500/50 bg-white dark:bg-gray-900 rounded-xl p-2 transition-all duration-300' : ''}`}>
                 <div>
                   <label htmlFor="carKm" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Car Logistics (KM)</label>
-                  <input id="carKm" type="number" min="0" step="any" value={carKm} onChange={(e) => { setCarKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
+                  <input id="carKm" type="number" min="0" step="any" placeholder="e.g. 15 KM car travel" value={carKm} onChange={(e) => { setCarKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
                 </div>
                 <div>
                   <label htmlFor="busKm" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Public Bus (KM)</label>
-                  <input id="busKm" type="number" min="0" step="any" value={busKm} onChange={(e) => { setBusKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
+                  <input id="busKm" type="number" min="0" step="any" placeholder="e.g. 3 KM bus travel" value={busKm} onChange={(e) => { setBusKm(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
                 </div>
                 <div>
                   <label htmlFor="electricityKwh" className="block text-[11px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-2">Grid Electricity (KWH)</label>
-                  <input id="electricityKwh" type="number" min="0" step="any" value={electricityKwh} onChange={(e) => { setElectricityKwh(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
+                  <input id="electricityKwh" type="number" min="0" step="any" placeholder="e.g. 12 KWH electricity usage" value={electricityKwh} onChange={(e) => { setElectricityKwh(e.target.value); setIsEditing(true); }} className="w-full px-4 py-3 border border-gray-200 dark:border-gray-800/80 bg-gray-50 dark:bg-gray-950/60 text-gray-900 dark:text-white rounded-xl outline-none text-sm font-semibold focus:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500 transition-colors" />
                 </div>
               </div>
 
@@ -321,7 +321,7 @@ function Dashboard() {
           )}
         </div>
       </div>
-
+      {/* TUTORIAL TABS */}
       {tourStep > 0 && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-[140] transition-all duration-300 animate-in fade-in">
 
@@ -363,8 +363,8 @@ function Dashboard() {
               )}
               {tourStep === 4 && (
                 <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-1">Deployment Successful!</h4>
-                  <p>Your platform features are loaded, structurally secure, optimized with focus bounds for high accessibility, and tightly synchronized to the local database.</p>
+                  <h4 className="font-bold text-gray-900 dark:text-white mb-1">GET SET TRACK!</h4>
+                  <p>We just Help You Track... YOU MAKE THE CHANGES! #YOUR ARE THE HERO 💖 </p>
                 </div>
               )}
             </div>

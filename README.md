@@ -200,6 +200,26 @@ Current metrics:
 - 100% passing
 - 66% code coverage
 ---
+
+## 🧭 Interactive Guided Tour (Tutorial System)
+
+The application features a built-in, immersive tutorial overlay to help first-time users confidently navigate the configuration workspace. 
+
+### How It Works:
+1. **Onboarding State Verification:** On component mount, the app queries `localStorage` for `has_boarded_v3`. If no flag is found, the tutorial sequence automatically triggers (`tourStep = 1`).
+2. **Contextual Isolation:** The tour progresses through 4 specialized checkpoints by updating the component state step-by-step. It targets and visually highlights essential form modules via dynamic CSS classes (`relative z-[150] ring-4 ring-emerald-500/50`).
+3. **The Step Pipeline:**
+
+| Step | Target Focus | Overlay Insight Summary |
+| :--- | :--- | :--- |
+| **Step 1** | Transit Parameters | Breaks down where to log car & bus mileage data featuring helpful inline text placeholders. |
+| **Step 2** | Dietary Profile | Highlights toggles for customizing meal configurations. |
+| **Step 3** | Ledger Sync Button | Showcases the main synchronization CTA that securely flushes data payload states directly to the database. |
+| **Step 4** | Complete Callout | Motivating final banner celebrating the tracking setup completion. |
+
+4. **Persistence Layer:** Clicking **"Skip Tour ✕"** or completing the final step records `has_boarded_v3: "true"` directly to the client's local storage storage layout, ensuring returning users enter straight into the live dashboard workspace next time.
+
+---
 ## 📸 App Showcase
 
 ![Malina Ikshan Showcase](slides.svg)
