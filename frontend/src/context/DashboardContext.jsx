@@ -27,35 +27,63 @@ export const DashboardProvider = ({ children }) => {
   const displayElectricity = parseFloat(electricityVal.toFixed(2));
   const displayDiet = parseFloat(dietVal.toFixed(2));
 
-  const generateLocalCoachAdvice = useCallback((scoreValue) => {
-    const score = scoreValue || 0;
-    let score_category = "";
-    let score_explanation = "";
+  const generateLocalCoachAdvice = useCallback(() => {
+    const transport = displayTransport;
+    const electricity = displayElectricity;
+    const diet = displayDiet;
 
-    if (score >= 90) {
-      score_category = "🌟 Eco Champion";
-      score_explanation = "Outstanding efficiency! You're setting a golden standard.";
-    } else if (score >= 75) {
-      score_category = "🌱 Sustainable";
-      score_explanation = "Great job! Your footprint is under careful management.";
-    } else if (score >= 60) {
-      score_category = "⚖️ Moderate Impact";
-      score_explanation = "Your carbon footprint is hovering around the standard baseline.";
-    } else {
-      score_category = "⚠️ High Impact";
-      score_explanation = "Emissions exceed safe thresholds. Immediate optimization recommended.";
+    const calculated_total = parseFloat((transport + electricity + diet).toFixed(2));
+    let transport_pct = 0, electricity_pct = 0, diet_pct = 0;
+
+    if (calculated_total > 0) {
+      transport_pct = (transport / calculated_total) * 100;
+      electricity_pct = (electricity / calculated_total) * 100;
+      diet_pct = (diet / calculated_total) * 100;
     }
 
+    let initial_score = 100 - (calculated_total * 3);
+    initial_score = Math.max(0, Math.min(100, initial_score));
+
+    let penalty = 0;
+    if (transport_pct > 80 || electricity_pct > 80 || diet_pct > 80) penalty = 15;
+    else if (transport_pct > 60 || electricity_pct > 60 || diet_pct > 60) penalty = 8;
+
+    let final_score = Math.max(0, Math.min(100, Math.round(initial_score - penalty)));
+
+    let category = "🚨 Critical Impact";
+    if (final_score >= 90) category = "🌟 Eco Champion";
+    else if (final_score >= 75) category = "🌱 Sustainable";
+    else if (final_score >= 50) category = "⚖️ Moderate Impact";
+    else if (final_score >= 25) category = "⚠️ High Impact";
+
+    let primary_source = "diet";
+    if (transport >= electricity && transport >= diet) primary_source = "transport";
+    else if (electricity > transport && electricity >= diet) primary_source = "electricity";
+    
+    let transport_insight = transport_pct > 40 ? "High localized transit emissions detected. Transition solo commutes to shared vehicle corridors or public transit." : transport_pct >= 20 ? "Moderate transportation footprint. Consolidate travel segments to maintain systemic balance." : "Excellent low-impact transit profile preserved for this logging cycle.";
+    
+    let electricity_insight = electricity_pct > 40 ? "Critical grid power draw observed. Audit baseline infrastructure and idle hardware configurations." : electricity_pct >= 20 ? "Standard energy optimization window available. Transition secondary loads to high-efficiency configurations." : "Superb power conservation profile with minimal active grid dependency.";
+    
+    let diet_insight = diet_pct > 35 ? "Dietary carbon footprint exceeds target thresholds. Substitute high-impact proteins with alternative plant profiles." : "Dietary composition metrics remain well within standard operational baselines.";
+
+    let explanation = `Operational score evaluated at ${final_score} based on a cumulative footprint calculation of ${calculated_total} kg CO2, driven primarily by ${primary_source} metrics.`;
+    
+    let action = "";
+    if (primary_source === "transport") action = "Deploy ride-sharing protocols or utilize public bus logistics for the next commute cycle.";
+    else if (primary_source === "electricity") action = "Disconnect phantom power draws and schedule heavy computational loads during solar peak windows.";
+    else action = "Incorporate a fully plant-based meal selection into your next culinary tracking log.";
+
     return {
-      score,
-      score_category,
-      score_explanation,
-      highlighted_action: totalVal > 5 ? "Consider substituting short car trips with transit or switching up a meal to plant-based options today." : "Exceptional parameters. Maintain your current active regimen!",
-      transport_insight: `Transit accounts for ${Math.round((displayTransport / (totalVal || 1)) * 100)}% of your daily output.`,
-      electricity_insight: `Power grid draw commands ${Math.round((displayElectricity / (totalVal || 1)) * 100)}% of your total footprint.`,
-      diet_insight: `Dietary choices generate ${Math.round((displayDiet / (totalVal || 1)) * 100)}% of today's impact.`,
+      score: final_score,
+      score_category: category,
+      score_explanation: explanation,
+      primary_source,
+      transport_insight,
+      electricity_insight,
+      diet_insight,
+      highlighted_action: action
     };
-  }, [totalVal, displayTransport, displayElectricity, displayDiet]);
+  }, [displayTransport, displayElectricity, displayDiet]);
 
   const fetchDashboardData = useCallback(async (force = false) => {
     if (result && !force) return; // Prevent re-fetching if data is cached
