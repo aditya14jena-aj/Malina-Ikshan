@@ -1249,22 +1249,40 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Onboarding Tutorial Overlay */}
+      {/* --- TASK 4: ONBOARDING SYSTEM MODAL --- */}
       {showTutorial && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm px-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-emerald-500/30">
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Welcome to Malina-Ikshan! 🌱</h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm leading-relaxed">
-              Let's get started on your sustainability journey.
-              <br /><br />
-              <strong>1. Activity Parameters:</strong> Enter your daily car/bus distance and electricity usage here on the left.<br />
-              <strong>2. Dietary Profile:</strong> Select your general diet for today.<br />
-              <strong>3. Sync:</strong> Hit <strong>"Synchronize Metrics"</strong> to push your data to the AI Engine.<br />
-              <strong>4. Insights:</strong> Watch your footprint metrics update and get live coaching advice from the AI on the right.
-            </p>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[200]">
+          <div className="bg-surface dark:bg-[#111] border border-border dark:border-[#222] rounded-2xl max-w-md w-full p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="text-center mb-4">
+              <span className="text-4xl">🌱</span>
+              <h2 className="text-2xl font-bold text-text-main mt-2">Welcome to Malina!</h2>
+              <p className="text-sm text-text-muted mt-1">Let's fast-track your low-carbon tracking layout.</p>
+            </div>
+
+            <div className="space-y-4 my-6 text-sm text-text-main">
+              <div className="flex gap-3">
+                <span className="text-xl">📊</span>
+                <div>
+                  <strong>Activity Parameters:</strong> Fill out your daily transit parameters. The field values seamlessly update your dynamic calculations.
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-xl">🥗</span>
+                <div>
+                  <strong>Dietary Profiles:</strong> Select your meal layouts using our accessible toggles to dynamically recalculate footprint impacts.
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="text-xl">⚡</span>
+                <div>
+                  <strong>Sync Dashboard:</strong> Push your entries to the server securely. Data persists cleanly across cache cleans and refreshes.
+                </div>
+              </div>
+            </div>
+
             <button
-              onClick={closeTutorial}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-500"
+              onClick={handleCloseTutorial}
+              className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-white font-bold rounded-xl shadow-lg transition-all focus-visible:ring-4 focus-visible:outline-none focus-visible:ring-emerald-300"
             >
               Let's Go!
             </button>
