@@ -69,9 +69,23 @@ export const DashboardProvider = ({ children }) => {
     let explanation = `Operational score evaluated at ${final_score} based on a cumulative footprint calculation of ${calculated_total} kg CO2, driven primarily by ${primary_source} metrics.`;
     
     let action = "";
-    if (primary_source === "transport") action = "Deploy ride-sharing protocols or utilize public bus logistics for the next commute cycle.";
-    else if (primary_source === "electricity") action = "Disconnect phantom power draws and schedule heavy computational loads during solar peak windows.";
-    else action = "Incorporate a fully plant-based meal selection into your next culinary tracking log.";
+    // Calculate AI Impact Prediction — 20% reduction on the dominant sector
+    let potential_daily_savings = 0;
+    let potential_action = "";
+    if (primary_source === "transport") {
+      action = "Deploy ride-sharing protocols or utilize public bus logistics for the next commute cycle.";
+      potential_daily_savings = parseFloat((transport * 0.20).toFixed(2));
+      potential_action = "20% car travel cut";
+    } else if (primary_source === "electricity") {
+      action = "Disconnect phantom power draws and schedule heavy computational loads during solar peak windows.";
+      potential_daily_savings = parseFloat((electricity * 0.20).toFixed(2));
+      potential_action = "20% power cut";
+    } else {
+      action = "Incorporate a fully plant-based meal selection into your next culinary tracking log.";
+      potential_daily_savings = parseFloat((diet * 0.20).toFixed(2));
+      potential_action = "Low-emission meal swap";
+    }
+    const potential_yearly_savings = parseFloat((potential_daily_savings * 365).toFixed(2));
 
     return {
       score: final_score,
@@ -81,7 +95,10 @@ export const DashboardProvider = ({ children }) => {
       transport_insight,
       electricity_insight,
       diet_insight,
-      highlighted_action: action
+      highlighted_action: action,
+      potential_daily_savings,
+      potential_yearly_savings,
+      potential_action
     };
   }, [displayTransport, displayElectricity, displayDiet]);
 

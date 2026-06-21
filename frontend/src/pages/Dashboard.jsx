@@ -43,6 +43,7 @@ function Dashboard() {
   const [notifications, setNotifications] = useState([]);
   const [tourStep, setTourStep] = useState(0);
 
+
   useEffect(() => {
     const hasBoarded = localStorage.getItem("has_boarded_v3");
     if (!hasBoarded) {
@@ -107,6 +108,8 @@ function Dashboard() {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+
 
   useEffect(() => {
     if (result) {
@@ -311,6 +314,36 @@ function Dashboard() {
                 </div>
               </div>
 
+              {/* AI Impact Prediction Card */}
+              {coachData.potential_daily_savings > 0 && (
+                <div className="mb-8 p-5 bg-gradient-to-br from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-2xl border border-emerald-500/15 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-teal-500"></div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-lg">🎯</span>
+                    <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-widest">Potential Savings</h4>
+                    <span className="ml-auto px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] font-bold uppercase tracking-widest rounded-full border border-emerald-500/20">
+                      {coachData.potential_action}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="bg-white dark:bg-gray-950/60 rounded-xl p-3.5 border border-gray-100 dark:border-gray-800/60 text-center">
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Daily Savings</p>
+                      <p className="text-lg font-black text-emerald-500">{coachData.potential_daily_savings}</p>
+                      <p className="text-[9px] text-gray-400 font-semibold">kg CO₂</p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-950/60 rounded-xl p-3.5 border border-gray-100 dark:border-gray-800/60 text-center">
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Yearly Savings</p>
+                      <p className="text-lg font-black text-teal-500">{coachData.potential_yearly_savings}</p>
+                      <p className="text-[9px] text-gray-400 font-semibold">kg CO₂</p>
+                    </div>
+                    <div className="bg-white dark:bg-gray-950/60 rounded-xl p-3.5 border border-gray-100 dark:border-gray-800/60 text-center">
+                      <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Recommended</p>
+                      <p className="text-xs font-black text-indigo-500 leading-tight mt-1">{coachData.potential_action}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Component Strategy Analytics Row */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="bg-gray-50 dark:bg-gray-950/40 border border-gray-100 dark:border-gray-800/50 p-5 rounded-2xl"><div className="flex items-center gap-3 mb-3.5"><span className="flex items-center justify-center bg-blue-500/10 text-blue-400 h-9 w-9 rounded-xl text-base">🚗</span><h4 className="font-extrabold text-gray-900 dark:text-white text-xs tracking-tight">Transit Metric</h4></div><p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed font-medium">{coachData.transport_insight}</p></div>
@@ -321,6 +354,8 @@ function Dashboard() {
           )}
         </div>
       </div>
+
+
       {/* TUTORIAL TABS */}
       {tourStep > 0 && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs z-[140] transition-all duration-300 animate-in fade-in">

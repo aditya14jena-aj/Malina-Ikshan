@@ -15,3 +15,6 @@ class CoachResponse(BaseModel):
     electricity_insight: str
     diet_insight: str
     highlighted_action: str
+    potential_daily_savings: float = 0.0
+    potential_yearly_savings: float = 0.0
+    potential_action: str = ""

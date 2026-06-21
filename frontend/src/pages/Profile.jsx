@@ -4,25 +4,53 @@ import AuthContext from "../context/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// XP Level thresholds and rank titles
+const LEVEL_THRESHOLDS = [
+  { level: 1, min: 0,    max: 99,   title: "Green Seedling",  icon: "🌱" },
+  { level: 2, min: 100,  max: 249,  title: "Eco Explorer",    icon: "🌿" },
+  { level: 3, min: 250,  max: 499,  title: "Eco Warrior",     icon: "🌍" },
+  { level: 4, min: 500,  max: 999,  title: "Earth Guardian",  icon: "🛡️" },
+  { level: 5, min: 1000, max: Infinity, title: "Eco Champion", icon: "🏆" },
+];
+
+function getLevelInfo(xp) {
+  const lvl = LEVEL_THRESHOLDS.find((l) => xp >= l.min && xp <= l.max) ||
+    LEVEL_THRESHOLDS[LEVEL_THRESHOLDS.length - 1];
+  const nextLvl = LEVEL_THRESHOLDS.find((l) => l.level === lvl.level + 1);
+  const progressPct = nextLvl
+    ? Math.min(100, Math.round(((xp - lvl.min) / (nextLvl.min - lvl.min)) * 100))
+    : 100;
+  return {
+    ...lvl,
+    nextMin: nextLvl ? nextLvl.min : lvl.min,
+    progressPct,
+  };
+}
+
 function Profile() {
   const [badges, setBadges] = useState([]);
+  const [xp, setXp] = useState(0);
   const { user, logout } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const badgeRes = await axios.get(`${API_URL}/achievements`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }
-        });
-        if (badgeRes.data) {
-          setBadges(badgeRes.data);
-        }
+        const token = localStorage.getItem("access_token");
+        const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+        const [badgeRes, streakRes] = await Promise.all([
+          axios.get(`${API_URL}/achievements`, authHeaders),
+          axios.get(`${API_URL}/api/emissions/streak`, authHeaders),
+        ]);
+        if (badgeRes.data) setBadges(badgeRes.data);
+        if (streakRes.data?.score !== undefined) setXp(streakRes.data.score);
       } catch (e) {
-        console.error("Failed to fetch badges", e);
+        console.error("Failed to fetch profile data", e);
       }
     };
     fetchProfileData();
   }, []);
+
+  const levelInfo = getLevelInfo(xp);
 
   return (
     <div className="max-w-6xl mx-auto px-6 lg:px-12 pb-16 pt-4 transition-all duration-300 antialiased selection:bg-emerald-500/30">
@@ -55,9 +83,25 @@ function Profile() {
             <h2 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
               {user ? user.username : "User"}
             </h2>
-            <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-10 mt-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/10">
-              🌱 Eco Warrior
+
+            {/* Dynamic Level Display */}
+            <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-2 mt-1.5 px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/10">
+              {levelInfo.icon} Level {levelInfo.level} · {levelInfo.title}
             </p>
+
+            {/* XP Progress Bar */}
+            <div className="w-full mb-4">
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">XP Progress</span>
+                <span className="text-[10px] font-bold text-emerald-500">{xp} / {levelInfo.nextMin === levelInfo.min ? "MAX" : levelInfo.nextMin} XP</span>
+              </div>
+              <div className="h-2 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${levelInfo.progressPct}%` }}
+                />
+              </div>
+            </div>
 
             {/* Modern Clean Destruction Utility Action Button */}
             <button

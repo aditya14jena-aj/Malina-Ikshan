@@ -84,10 +84,18 @@ class CoachService:
         # One highlighted action item based on the primary source
         if primary_source == "Transportation":
             highlighted_action = "Commit to taking public transit or cycling for your commute twice this week to slash your primary emission source."
+            potential_daily_savings = round(data.transport * 0.20, 2)
+            potential_action = "20% car travel cut"
         elif primary_source == "Electricity":
             highlighted_action = "Perform an energy audit today: unplug all unused electronics and lower your thermostat/AC by 1-2 degrees."
+            potential_daily_savings = round(data.electricity * 0.20, 2)
+            potential_action = "20% power cut"
         else:
             highlighted_action = "Make your next 3 meals entirely plant-based to immediately curb the high emissions from your diet."
+            potential_daily_savings = round(data.diet * 0.20, 2)
+            potential_action = "Low-emission meal swap"
+            
+        potential_yearly_savings = round(potential_daily_savings * 365, 2)
 
         return CoachResponse(
             score=score,
@@ -97,5 +105,8 @@ class CoachService:
             transport_insight=t_insight,
             electricity_insight=e_insight,
             diet_insight=d_insight,
-            highlighted_action=highlighted_action
+            highlighted_action=highlighted_action,
+            potential_daily_savings=potential_daily_savings,
+            potential_yearly_savings=potential_yearly_savings,
+            potential_action=potential_action
         )

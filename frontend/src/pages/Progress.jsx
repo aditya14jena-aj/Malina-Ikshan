@@ -419,6 +419,9 @@ function Progress() {
   const [history, setHistory] = useState([]);
   const [streaks, setStreaks] = useState({ current_streak: 0, longest_streak: 0 });
   const [result, setResult] = useState(null);
+  const [weeklyReport, setWeeklyReport] = useState(null);
+  const [reportLoading, setReportLoading] = useState(false);
+
 
   const fetchProgressData = async () => {
     try {
@@ -447,11 +450,30 @@ function Progress() {
     window.addEventListener("sustainDataUpdated", fetchProgressData);
     window.addEventListener("focus", fetchProgressData);
 
+    // Fetch weekly sustainability report (bundled — single mount cycle, no duplicate calls)
+    const fetchWeeklyReport = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+      setReportLoading(true);
+      try {
+        const res = await axios.get(`${API_URL}/api/emissions/weekly-report`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setWeeklyReport(res.data);
+      } catch (e) {
+        console.error("Failed to fetch weekly report", e);
+      } finally {
+        setReportLoading(false);
+      }
+    };
+    fetchWeeklyReport();
+
     return () => {
       window.removeEventListener("sustainDataUpdated", fetchProgressData);
       window.removeEventListener("focus", fetchProgressData);
     };
   }, []);
+
 
   const bestDay = history.length > 0 ? history.reduce((min, p) => (p.total < min.total ? p : min), history[0]) : null;
   const avgWeekly = history.length > 0 ? (history.reduce((acc, p) => acc + p.total, 0) / history.length).toFixed(2) : "--";
@@ -509,7 +531,67 @@ function Progress() {
         </div>
       </div>
 
-      {/* Target Tracker Section */}
+      {/* 📊 Weekly Sustainability Report */}
+      {(weeklyReport || reportLoading) && (
+        <div className="mb-10 bg-white dark:bg-gray-900/50 dark:backdrop-blur-xl p-8 rounded-[2.5rem] shadow-md dark:shadow-none border border-gray-100 dark:border-gray-800/80 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500"></div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white tracking-tight">📊 Weekly Sustainability Report</h3>
+                <span className="px-3 py-1 bg-gradient-to-r from-violet-500 to-fuchsia-600 text-white text-[9px] uppercase font-extrabold tracking-widest rounded-full shadow-sm">AI Generated</span>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">7-day aggregate analysis of your environmental impact metrics.</p>
+            </div>
+          </div>
+          {reportLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="h-6 w-6 rounded-full border-2 border-violet-500 border-t-transparent animate-spin"></div>
+            </div>
+          ) : weeklyReport && (
+            <>
+              {/* Stat Cards Row */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <div className="col-span-2 md:col-span-1 bg-gradient-to-br from-violet-500/10 to-fuchsia-500/5 border border-violet-500/15 rounded-2xl p-4 text-center">
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Weekly Total</p>
+                  <p className="text-2xl font-black text-violet-500">{weeklyReport.weekly_emissions}</p>
+                  <p className="text-[9px] text-gray-400 font-semibold mt-0.5">kg CO₂</p>
+                </div>
+                <div className="bg-gray-50/60 dark:bg-gray-950/40 border border-gray-100 dark:border-gray-800/60 rounded-2xl p-4 text-center">
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Avg Eco Score</p>
+                  <p className="text-2xl font-black text-emerald-500">{weeklyReport.average_score}</p>
+                  <p className="text-[9px] text-gray-400 font-semibold mt-0.5">/ 100</p>
+                </div>
+                <div className="bg-gray-50/60 dark:bg-gray-950/40 border border-gray-100 dark:border-gray-800/60 rounded-2xl p-4 text-center">
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Best Day</p>
+                  <p className="text-base font-black text-teal-500 leading-tight mt-1">{weeklyReport.best_day}</p>
+                  <p className="text-[9px] text-gray-400 font-semibold mt-0.5">lowest CO₂</p>
+                </div>
+                <div className="bg-gray-50/60 dark:bg-gray-950/40 border border-gray-100 dark:border-gray-800/60 rounded-2xl p-4 text-center">
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Worst Day</p>
+                  <p className="text-base font-black text-rose-500 leading-tight mt-1">{weeklyReport.worst_day}</p>
+                  <p className="text-[9px] text-gray-400 font-semibold mt-0.5">highest CO₂</p>
+                </div>
+                <div className="col-span-2 bg-gray-50/60 dark:bg-gray-950/40 border border-gray-100 dark:border-gray-800/60 rounded-2xl p-4 text-center">
+                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Primary Source</p>
+                  <p className="text-base font-black text-amber-500 leading-tight mt-1">{weeklyReport.primary_source}</p>
+                  <p className="text-[9px] text-gray-400 font-semibold mt-0.5">dominant sector</p>
+                </div>
+              </div>
+              {/* AI Recommendation Banner */}
+              <div className="p-4 bg-gradient-to-br from-violet-500/5 to-fuchsia-500/5 rounded-2xl border border-violet-500/10 flex gap-4 items-start">
+                <div className="text-xl bg-white dark:bg-gray-950 p-2 rounded-xl border border-gray-100 dark:border-gray-800 shrink-0">🤖</div>
+                <div>
+                  <h4 className="text-[10px] font-bold text-violet-500 uppercase tracking-widest mb-1">AI Weekly Recommendation</h4>
+                  <p className="text-gray-800 dark:text-gray-200 font-semibold text-sm leading-relaxed">{weeklyReport.recommendation}</p>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+
       <div className="mb-10 bg-gradient-to-br from-indigo-500/20 via-teal-500/5 to-transparent dark:from-indigo-950/40 p-0.5 rounded-[2.5rem] border border-gray-100 dark:border-gray-800/40">
         <div className="bg-white/80 dark:bg-gray-900/40 dark:backdrop-blur-xl rounded-[2.4rem] p-8 h-full">
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">

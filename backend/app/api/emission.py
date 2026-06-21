@@ -23,7 +23,7 @@ def read_logs(db: Session = Depends(get_db), current_user: User = Depends(get_cu
 
 @router.get("/streak")
 def read_streak(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    return {"current_streak": current_user.streak or 0, "longest_streak": current_user.streak or 0}
+    return {"current_streak": current_user.streak or 0, "longest_streak": current_user.streak or 0, "score": current_user.score or 0}
 
 @router.get("/weekly")
 def read_weekly_logs(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -78,12 +78,18 @@ def add_or_update_daily_log(
 
     if goal_met and not had_log_today:
         current_user.streak = (current_user.streak or 0) + 1
-        current_user.score = (current_user.score or 0) + 20 # Add 20 points
-        db.commit()
-        db.refresh(current_user)
-    elif not had_log_today:
-        # Logged but goal not met
-        current_user.score = (current_user.score or 0) + 5 # Small completion reward
+        
+    if not had_log_today:
+        base_xp = 10
+        bonus_xp = 0
+        if db_log.eco_score >= 90:
+            bonus_xp = 30
+        elif db_log.eco_score >= 80:
+            bonus_xp = 20
+        elif db_log.eco_score >= 70:
+            bonus_xp = 10
+            
+        current_user.score = (current_user.score or 0) + base_xp + bonus_xp
         db.commit()
         db.refresh(current_user)
 
@@ -101,4 +107,56 @@ def read_progress(
 ):
     history = read_weekly_logs(db=db, current_user=current_user)
     return {"history": history, "streaks": {"current_streak": current_user.streak}}
+
+@router.get("/weekly-report")
+def read_weekly_report(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    logs = get_weekly_logs(db=db, user_id=current_user.id)
+    if not logs:
+        return {
+            "weekly_emissions": 0.0,
+            "average_score": 0,
+            "best_day": "N/A",
+            "worst_day": "N/A",
+            "primary_source": "N/A",
+            "recommendation": "Log your emissions to get insights."
+        }
+    
+    total_emissions = sum(log.total for log in logs)
+    avg_score = sum(log.eco_score for log in logs) / len(logs)
+    
+    best_log = min(logs, key=lambda l: l.total)
+    worst_log = max(logs, key=lambda l: l.total)
+    
+    from datetime import datetime
+    def format_day(d):
+        try:
+            return datetime.strptime(str(d), '%Y-%m-%d').strftime('%A')
+        except Exception:
+            return str(d)
+            
+    best_day_str = format_day(best_log.day) if hasattr(best_log, "day") else format_day(best_log.date)
+    worst_day_str = format_day(worst_log.day) if hasattr(worst_log, "day") else format_day(worst_log.date)
+    
+    t_tot = sum(log.transport for log in logs)
+    e_tot = sum(log.electricity for log in logs)
+    d_tot = sum(log.diet for log in logs)
+    
+    sources = {"Transportation": t_tot, "Electricity": e_tot, "Diet": d_tot}
+    primary_source = max(sources, key=sources.get)
+    
+    if primary_source == "Transportation":
+        recommendation = "Reducing car travel or carpooling could drastically improve your weekly average."
+    elif primary_source == "Electricity":
+        recommendation = "Consider an energy audit or reducing AC/heating usage slightly to save power."
+    else:
+        recommendation = "Incorporating more plant-based meals could lower your dominant dietary emissions."
+        
+    return {
+        "weekly_emissions": round(total_emissions, 2),
+        "average_score": int(avg_score),
+        "best_day": best_day_str,
+        "worst_day": worst_day_str,
+        "primary_source": primary_source,
+        "recommendation": recommendation
+    }
 

@@ -74,8 +74,8 @@ def evaluate_badges(db: Session, user_id: int, current_log: EmissionLog):
         title="Badge Unlocked!",
         message=f"You earned {badge_name} {badge_data['icon']}",
         notif_type="achievement"
-    )
-    
+        )
+
         unlocked_objects.append(db_badge)
         
     if unlocked_objects:

@@ -201,6 +201,7 @@ Current metrics:
 - 66% code coverage
 ---
 
+
 ## 🧭 Interactive Guided Tour (Tutorial System)
 
 The application features a built-in, immersive tutorial overlay to help first-time users confidently navigate the configuration workspace. 
