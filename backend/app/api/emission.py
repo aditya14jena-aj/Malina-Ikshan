@@ -80,16 +80,25 @@ def add_or_update_daily_log(
         current_user.streak = (current_user.streak or 0) + 1
         
     if not had_log_today:
-        base_xp = 10
-        bonus_xp = 0
-        if db_log.eco_score >= 90:
-            bonus_xp = 30
-        elif db_log.eco_score >= 80:
-            bonus_xp = 20
-        elif db_log.eco_score >= 70:
-            bonus_xp = 10
-            
-        current_user.score = (current_user.score or 0) + base_xp + bonus_xp
+        # Dynamic eco-score scaling matrix
+        eco = db_log.eco_score
+        if   eco >= 90: pts = 50
+        elif eco >= 80: pts = 40
+        elif eco >= 70: pts = 30
+        elif eco >= 60: pts = 20
+        elif eco >= 50: pts = 10
+        else:           pts = 5
+
+        current_user.score = (current_user.score or 0) + pts
+
+        # Streak milestone bonuses — exact == prevents double-award on re-runs
+        streak_now = current_user.streak or 0
+        STREAK_MILESTONES = {3: 25, 7: 75, 14: 150, 30: 500}
+        for milestone_days, bonus in STREAK_MILESTONES.items():
+            if streak_now == milestone_days:
+                current_user.score += bonus
+                break
+
         db.commit()
         db.refresh(current_user)
 

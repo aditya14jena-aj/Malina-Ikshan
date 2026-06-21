@@ -20,16 +20,81 @@
 
 ## ✨ Features
 
-| Feature | Description |
-|---|---|
-| 🌱 **Carbon Footprint Calculator** | Estimate your emissions from daily activities |
-| 📊 **Daily Activity Tracking** | Log and monitor your carbon-generating habits |
-| 📈 **Emissions Dashboard** | Visualize your footprint over time with charts |
-| 🤖 **AI Sustainability Coach** | Get personalized advice powered by AI |
-| 🎯 **Smart Recommendations** | Actionable tips tailored to your lifestyle |
-| 🏆 **Community Leaderboard** | Compare progress and stay motivated |
-| 📱 **Responsive UI** | Seamless experience across all devices |
-| 📉 **Data Visualizations** | Rich analytics to understand your impact |
+
+| Feature                              | Description                                                                               |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- |
+| 🌱 **Carbon Footprint Calculator**   | Calculate emissions from transportation, electricity usage, and dietary habits            |
+| 📊 **Daily Sustainability Tracking** | Log daily activities and monitor environmental impact                                     |
+| 🤖 **AI Sustainability Coach**       | Generates personalized sustainability insights, explanations, and improvement suggestions |
+| 📈 **Progress Analytics**            | Weekly trends, historical analysis, sustainability reports, and emissions visualization   |
+| 🔥 **Streak Tracking System**        | Build daily sustainability streaks and maintain eco-friendly habits                       |
+| 🏆 **Achievement & Badge System**    | Unlock sustainability milestones and earn environmental badges                            |
+| ⭐ **Gamified Eco Levels**            | Earn sustainability points and progress through eco-conscious levels                      |
+| 🔔 **Real-Time Notifications**       | Receive achievement alerts, milestone updates, and sustainability reminders               |
+| 🌍 **Community Leaderboard**         | Compare sustainability performance with other users                                       |
+| 📱 **Responsive Mobile Experience**  | Optimized layouts for desktop, tablet, and mobile devices                                 |
+| 🧭 **Interactive Guided Tour**       | Built-in onboarding tutorial for first-time users                                         |
+| 📉 **Advanced Data Visualizations**  | Charts, trends, weekly reports, and sustainability insights                               |
+
+---
+## 🎮 Gamification System
+
+Malina-Ikshan transforms sustainability tracking into an engaging journey through achievements, levels, streaks, and rewards.
+
+### Sustainability Points
+
+Users earn points based on their environmental performance:
+
+| Eco Score | Reward     |
+| --------- | ---------- |
+| 90 – 100  | +50 Points |
+| 80 – 89   | +40 Points |
+| 70 – 79   | +30 Points |
+| 60 – 69   | +20 Points |
+| 50 – 59   | +10 Points |
+| Below 50  | +5 Points  |
+
+### Streak Rewards
+
+| Milestone     | Bonus       |
+| ------------- | ----------- |
+| 3 Day Streak  | +25 Points  |
+| 7 Day Streak  | +75 Points  |
+| 14 Day Streak | +150 Points |
+| 30 Day Streak | +500 Points |
+
+### Achievement Badges
+
+Users can unlock sustainability badges such as:
+
+* 🌱 First Footprint
+* 🔥 3 Day Streak
+* 🏆 7 Day Streak
+* 💡 Energy Saver
+* 🚲 Green Traveler
+* 🌟 Eco Champion
+
+---
+
+## 🤖 AI Sustainability Coach
+
+The AI Sustainability Coach analyzes:
+
+* Transportation emissions
+* Electricity consumption
+* Dietary impact
+* Emission distribution patterns
+* Sustainability score trends
+
+The coach then generates:
+
+* Personalized explanations
+* Primary emission source detection
+* Actionable improvement strategies
+* Highlighted sustainability actions
+* Dynamic eco-performance feedback
+
+Rather than providing generic advice, recommendations are generated based on the user's actual environmental footprint.
 
 ---
 
@@ -172,6 +237,14 @@ Full interactive documentation available at [`/docs`](https://malina-ikshan.onre
 - CORS restricted in production environments
 
 ---
+### Weekly Sustainability Report
+
+* Weekly footprint summaries
+* Sustainability score evolution
+* Emission breakdown analysis
+* Behavioral improvement tracking
+
+---
 
 ## 🚀 Roadmap
 
@@ -200,7 +273,6 @@ Current metrics:
 - 100% passing
 - 66% code coverage
 ---
-
 
 ## 🧭 Interactive Guided Tour (Tutorial System)
 
@@ -240,5 +312,5 @@ Built with ❤️ to promote sustainability and climate awareness.
 *Malina-Ikshan (मलिन-ईक्षण) — "Pollution Monitor" in Sanskrit*
 
 </div>
-=======
+
 </div>

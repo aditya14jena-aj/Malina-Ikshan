@@ -121,10 +121,10 @@ function Community() {
                   <div className="text-right shrink-0">
                     <h4 className={`text-lg font-black tracking-tight ${isCurrentUser ? "text-emerald-600 dark:text-emerald-400" : "text-gray-900 dark:text-white"
                       }`}>
-                      {parseFloat(entry.avg_score || 0).toFixed(1)}
+                      {(entry.total_points || 0).toLocaleString()}
                     </h4>
                     <p className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-0.5">
-                      Avg Score
+                      Total Pts
                     </p>
                   </div>
 
